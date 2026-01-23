@@ -1,4 +1,4 @@
-# Verity 🔍
+# Verity
 
 **Forensic truth verification powered by Gemini 3's reasoning engine**
 
@@ -6,7 +6,7 @@
 [![Built with Gemini API](https://img.shields.io/badge/Built%20with-Gemini%20API-orange)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 🎯 What is Verity?
+## What is Verity?
 
 Verity analyzes contradictory evidence across multiple formats—video, audio, documents, images—to reconstruct verified timelines and detect inconsistencies. Unlike summarization tools, Verity **shows its reasoning process** using Gemini 3's thinking mode, proving why you can trust its conclusions.
 
@@ -15,13 +15,13 @@ Journalists, investigators, and fact-checkers drown in conflicting sources. When
 
 ### The Solution
 Verity uses **Gemini 3's advanced reasoning** to:
-- 📄 Extract claims from multimodal evidence
-- 🧠 Reason through contradictions transparently  
-- ⏱️ Reconstruct verified timelines
-- ✅ Assess source credibility
-- 📊 Generate forensic reports
+- Extract claims from multimodal evidence
+- Reason through contradictions transparently  
+- Reconstruct verified timelines
+- Assess source credibility
+- Generate forensic reports
 
-## ✨ Key Features
+## Key Features
 
 - **Transparent Reasoning**: See Gemini 3's thinking process in real-time
 - **Multimodal Analysis**: Process video, audio, images, PDFs, and text
@@ -30,18 +30,18 @@ Verity uses **Gemini 3's advanced reasoning** to:
 - **Verified Timelines**: Reconstruct events with confidence scores
 - **Forensic Reports**: Generate downloadable analysis documents
 
-## 🚀 Demo
+## Demo
 
 [Live Demo](https://verity.vercel.app) | [Demo Video](https://youtube.com/...)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React + Vite + Tailwind CSS
 - **AI**: Gemini 3 Pro (reasoning) + Gemini 3 Flash (extraction)
 - **API**: Google Gemini API with Thinking Mode
 - **Deployment**: Vercel
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Clone repository
@@ -59,7 +59,7 @@ cp .env.example .env
 npm run dev
 ```
 
-## 🎮 Usage
+## Usage
 
 1. **Upload Evidence**: Drag and drop files (video, audio, images, PDFs)
 2. **Watch Verity Think**: See the reasoning process in real-time
@@ -67,7 +67,7 @@ npm run dev
 4. **Check Contradictions**: View flagged inconsistencies with analysis
 5. **Export Report**: Download the forensic analysis
 
-## 🧠 How It Works
+## How It Works
 
 Verity uses a two-stage analysis pipeline:
 
@@ -83,14 +83,14 @@ Verity uses a two-stage analysis pipeline:
 - **Thinking Mode** exposes the reasoning process
 - Generates comprehensive forensic report
 
-## 🎯 Use Cases
+## Use Cases
 
-- 📰 **Investigative Journalism**: Verify sources before publication
-- ⚖️ **Legal Investigation**: Analyze witness testimony for inconsistencies
-- 🔍 **Fact-Checking**: Verify claims across multiple sources
-- 🏢 **Corporate Compliance**: Detect timeline discrepancies in documentation
+- **Investigative Journalism**: Verify sources before publication
+- **Legal Investigation**: Analyze witness testimony for inconsistencies
+- **Fact-Checking**: Verify claims across multiple sources
+- **Corporate Compliance**: Detect timeline discrepancies in documentation
 
-## 🏆 Gemini 3 Integration
+## Gemini 3 Integration
 
 Verity showcases Gemini 3's unique capabilities:
 
@@ -100,19 +100,19 @@ Verity showcases Gemini 3's unique capabilities:
 - **File API**: Handle large video/audio files efficiently
 - **Structured Output**: Generate JSON for reliable parsing
 
-## 🤝 Contributing
+## Contributing
 
 Built for the [Gemini 3 Global Hackathon](https://gemini3.devpost.com).
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 Verity is an analysis tool, not a replacement for human judgment. It assesses probability, not absolute truth. Always verify critical findings with additional investigation.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built with [Gemini 3 API](https://ai.google.dev/gemini-api)
 - Inspired by the need for transparent AI reasoning
