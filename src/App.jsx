@@ -1,18 +1,44 @@
 ﻿import { useState } from 'react';
 import FileUpload from './components/FileUpload';
 import { MOCK_ANALYSIS } from './utils/mockData';
+import { uploadFilesToGemini, extractContentFromFiles, masterAnalysis } from './services/gemini';
+
+const USE_MOCK = false;
 
 function App() {
   const [stage, setStage] = useState('upload');
   const [analysis, setAnalysis] = useState(null);
+  const [error, setError] = useState(null);
+  const [progress, setProgress] = useState('');
 
   const handleFilesUploaded = async (files) => {
     setStage('processing');
-    
-    setTimeout(() => {
-      setAnalysis(MOCK_ANALYSIS);
+    setError(null);
+
+    try {
+      if (USE_MOCK) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setAnalysis(MOCK_ANALYSIS);
+        setStage('results');
+        return;
+      }
+
+      setProgress('Uploading files to Gemini...');
+      const uploadedFiles = await uploadFilesToGemini(files);
+
+      setProgress('Extracting content from files...');
+      const extractedContent = await extractContentFromFiles(uploadedFiles);
+
+      setProgress('Analyzing evidence and detecting contradictions...');
+      const analysisResult = await masterAnalysis(extractedContent);
+
+      setAnalysis(analysisResult);
       setStage('results');
-    }, 2000);
+    } catch (err) {
+      console.error('Analysis failed:', err);
+      setError(err.message || 'Analysis failed. Please try again.');
+      setStage('error');
+    }
   };
 
   if (stage === 'upload') {
@@ -36,7 +62,26 @@ function App() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-700">Analyzing evidence...</p>
+          <p className="text-xl text-gray-700 mb-2">Analyzing evidence...</p>
+          <p className="text-sm text-gray-500">{progress}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (stage === 'error') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center max-w-2xl p-8">
+          <div className="text-6xl mb-4">❌</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Analysis Failed</h2>
+          <p className="text-gray-700 mb-6">{error}</p>
+          <button
+            onClick={() => setStage('upload')}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
