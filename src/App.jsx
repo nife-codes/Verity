@@ -194,19 +194,18 @@ function App() {
     return (
       <div className="min-h-screen bg-slate-50 py-12">
         <div className="max-w-6xl mx-auto px-8">
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-semibold text-slate-900">Analysis Results</h1>
-            <div className="flex gap-3">
-              <DownloadReport analysis={analysis} />
-              <button
-                onClick={() => setStage('upload')}
-                className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-medium transition-colors duration-200"
-              >
-                New Analysis
-              </button>
-            </div>
-          </div>
-          
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+  <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">Analysis Results</h1>
+  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+    <DownloadReport analysis={analysis} />
+    <button
+      onClick={() => setStage('upload')}
+      className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-medium transition-colors duration-200 text-sm md:text-base"
+    >
+      New Analysis
+    </button>
+  </div>
+</div>
           <ThinkingMode thinkingText={analysis.thinking} />
           <Timeline events={analysis.timeline} />
           <Contradictions contradictions={analysis.contradictions} />
