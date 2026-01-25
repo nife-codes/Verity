@@ -18,7 +18,7 @@ function App() {
   const handleFilesUploaded = async (files) => {
     setStage('processing');
     setError(null);
-  
+
     try {
       if (USE_MOCK) {
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -26,13 +26,13 @@ function App() {
         setStage('results');
         return;
       }
-  
+
       setProgress('Extracting content from files...');
       const extractedContent = await extractContentFromFiles(files);
-  
+
       setProgress('Analyzing evidence and detecting contradictions...');
       const analysisResult = await masterAnalysis(extractedContent);
-  
+
       setAnalysis(analysisResult);
       setStage('results');
     } catch (err) {
@@ -67,7 +67,7 @@ function App() {
               Analyzes multiple evidence sources to reconstruct timelines, identify contradictions, and assess credibility.
             </p>
           </header>
-  
+
           <div className="grid md:grid-cols-3 gap-4 mb-10">
             <div className="bg-white border border-slate-200 rounded-lg p-5">
               <h3 className="font-semibold text-base mb-2 text-slate-900">
@@ -96,7 +96,7 @@ function App() {
               </p>
             </div>
           </div>
-  
+
           <div className="bg-white border border-slate-200 rounded-lg p-6 mb-8">
             <h2 className="text-xl font-semibold mb-2 text-slate-900">
               Demo Analysis
@@ -111,15 +111,15 @@ function App() {
               Load Demo Case
             </button>
           </div>
-  
+
           <div className="text-center mb-6">
             <span className="text-sm text-slate-400 font-medium">
               or analyze your own evidence
             </span>
           </div>
-  
+
           <FileUpload onFilesUploaded={handleFilesUploaded} />
-  
+
           <footer className="mt-10 pt-6 border-t border-slate-200">
             <p className="text-sm text-slate-500 text-center">
               Applications: Journalism, Legal Discovery, Compliance Auditing, Academic Research
@@ -194,18 +194,19 @@ function App() {
     return (
       <div className="min-h-screen bg-slate-50 py-12">
         <div className="max-w-6xl mx-auto px-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-  <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">Analysis Results</h1>
-  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-    <DownloadReport analysis={analysis} />
-    <button
-      onClick={() => setStage('upload')}
-      className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-medium transition-colors duration-200 text-sm md:text-base"
-    >
-      New Analysis
-    </button>
-  </div>
-</div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">Analysis Results</h1>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <DownloadReport analysis={analysis} />
+              <button
+                onClick={() => setStage('upload')}
+                className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-medium transition-colors duration-200 text-sm md:text-base"
+              >
+                New Analysis
+              </button>
+            </div>
+          </div>
+          
           <ThinkingMode thinkingText={analysis.thinking} />
           <Timeline events={analysis.timeline} />
           <Contradictions contradictions={analysis.contradictions} />

@@ -60,10 +60,11 @@ export async function extractContentFromFiles(files) {
   const allContent = [];
 
   for (const file of files) {
+    let result;
     try {
       const base64Data = await fileToBase64(file);
       
-      const result = await model.generateContent([
+      result = await model.generateContent([
         {
           inlineData: {
             mimeType: file.type,
@@ -86,24 +87,18 @@ Return ONLY valid JSON in this exact format (no markdown, no code blocks):
       ]);
 
       let responseText = result.response.text();
-      
       responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       
       const extracted = JSON.parse(responseText);
       allContent.push(extracted);
-      
-      console.log(`Successfully extracted from ${file.name}`);
     } catch (error) {
-      console.error(`Failed to extract from ${file.name}:`, error);
-      console.error('Raw response:', result?.response?.text?.());
-      
       allContent.push({
         source: file.name,
         type: "unknown",
         claims: [],
         people_mentioned: [],
         dates_mentioned: [],
-        key_facts: [`Error extracting content: ${error.message}`]
+        key_facts: ["Content extraction failed"]
       });
     }
   }
@@ -170,7 +165,6 @@ Return JSON:
     const result = await model.generateContent(prompt);
     return JSON.parse(result.response.text());
   } catch (error) {
-    console.error("Master analysis failed:", error);
-    throw error;
+    throw new Error('Failed to analyze evidence. Please try again or use fewer files.');
   }
 }
