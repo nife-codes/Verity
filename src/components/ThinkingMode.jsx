@@ -7,19 +7,19 @@ export default function ThinkingMode({ thinkingText }) {
   useEffect(() => {
     if (!thinkingText) return;
 
-    let index = 0;
     setDisplayedText('');
     setIsTyping(true);
+    let currentIndex = 0;
 
     const interval = setInterval(() => {
-      if (index < thinkingText.length) {
-        setDisplayedText(prev => prev + thinkingText[index]);
-        index++;
+      if (currentIndex < thinkingText.length) {
+        setDisplayedText(thinkingText.slice(0, currentIndex + 1));
+        currentIndex++;
       } else {
         setIsTyping(false);
         clearInterval(interval);
       }
-    }, 20);
+    }, 15);
 
     return () => clearInterval(interval);
   }, [thinkingText]);
@@ -34,7 +34,7 @@ export default function ThinkingMode({ thinkingText }) {
           <h3 className="text-lg font-semibold text-blue-900 mb-2">
             Reasoning Process
           </h3>
-          <div className="text-sm text-blue-800 font-mono whitespace-pre-wrap">
+          <div className="text-sm text-blue-800 font-mono whitespace-pre-wrap break-words">
             {displayedText}
             {isTyping && <span className="animate-pulse">▊</span>}
           </div>
