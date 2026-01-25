@@ -56,11 +56,20 @@ export default function FileUpload({ onFilesUploaded }) {
     }
   };
 
+  const getFileIcon = (type) => {
+    if (type.includes('audio')) return '🎵';
+    if (type.includes('video')) return '🎬';
+    if (type.includes('pdf')) return '📄';
+    return '🖼️';
+  };
+
   return (
-    <div className="w-full max-w-4xl mx-auto p-8">
+    <div className="w-full">
       <div
-        className={`border-2 border-dashed rounded-lg p-12 text-center transition ${
-          dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+        className={`border-2 border-dashed rounded-lg p-10 text-center transition-colors duration-200 ${
+          dragActive 
+            ? 'border-blue-500 bg-blue-50' 
+            : 'border-slate-300 bg-white'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -76,47 +85,47 @@ export default function FileUpload({ onFilesUploaded }) {
           onChange={handleChange}
         />
         
-        <label htmlFor="file-upload" className="cursor-pointer">
-          <div className="text-6xl mb-4">📁</div>
-          <p className="text-xl text-gray-700 mb-2">
-            Drag and drop evidence files
+        <label htmlFor="file-upload" className="cursor-pointer block">
+          <div className="text-5xl mb-3 text-slate-400">+</div>
+          <p className="text-base text-slate-700 mb-1 font-medium">
+            Upload evidence files
           </p>
-          <p className="text-sm text-gray-500 mb-4">
-            or click to browse
+          <p className="text-sm text-slate-500">
+            Drag and drop or click to browse
           </p>
-          <p className="text-xs text-gray-400">
-            Accepts: Audio, Video, PDF, Images
+          <p className="text-xs text-slate-400 mt-2">
+            Supports: Audio, Video, PDF, Images
           </p>
         </label>
       </div>
 
       {files.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-4">
-            Uploaded Files ({files.length})
-          </h3>
+        <div className="mt-5">
+          <p className="text-sm font-medium text-slate-700 mb-3">
+            Files ({files.length})
+          </p>
           <div className="space-y-2">
             {files.map((file, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-white p-4 rounded-lg shadow"
+                className="flex items-center justify-between bg-white border border-slate-200 p-3 rounded-lg"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">
-                    {file.type.includes('audio') ? '🎵' :
-                     file.type.includes('video') ? '🎬' :
-                     file.type.includes('pdf') ? '📄' : '🖼️'}
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <span className="text-xl flex-shrink-0">
+                    {getFileIcon(file.type)}
                   </span>
-                  <div>
-                    <p className="font-medium">{file.name}</p>
-                    <p className="text-sm text-gray-500">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm text-slate-900 truncate">
+                      {file.name}
+                    </p>
+                    <p className="text-xs text-slate-500">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => removeFile(index)}
-                  className="text-red-600 hover:text-red-800 font-semibold"
+                  className="text-sm text-slate-500 hover:text-red-600 font-medium ml-3 flex-shrink-0 transition-colors duration-200"
                 >
                   Remove
                 </button>
@@ -127,15 +136,15 @@ export default function FileUpload({ onFilesUploaded }) {
           <button
             onClick={handleAnalyze}
             disabled={files.length < 2}
-            className={`w-full mt-6 py-4 rounded-lg font-semibold text-lg transition ${
+            className={`w-full mt-4 py-3 px-4 rounded-lg font-medium text-base transition-all duration-200 ${
               files.length >= 2
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-blue-700 text-white hover:bg-blue-800'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
             }`}
           >
             {files.length < 2
               ? `Upload at least 2 files (${files.length}/2)`
-              : `Analyze ${files.length} Evidence Files`}
+              : `Analyze ${files.length} Files`}
           </button>
         </div>
       )}
