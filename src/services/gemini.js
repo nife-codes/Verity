@@ -71,33 +71,39 @@ export async function extractContentFromFiles(files) {
           }
         },
         {
-          text: `Extract information from this evidence file. Return JSON format:
+          text: `Analyze this evidence file and extract key information.
+
+Return ONLY valid JSON in this exact format (no markdown, no code blocks):
 {
   "source": "${file.name}",
-  "type": "audio|video|document|image",
-  "claims": [
-    {
-      "claim": "exact statement or fact",
-      "timestamp": "time or date mentioned",
-      "speaker": "person who made claim if applicable",
-      "context": "surrounding context"
-    }
-  ],
-  "people_mentioned": ["list of people"],
-  "dates_mentioned": ["list of dates"],
-  "locations_mentioned": ["list of places"],
-  "key_facts": ["important facts"]
+  "type": "document",
+  "claims": [{"claim": "statement", "timestamp": "when", "speaker": "who"}],
+  "people_mentioned": ["names"],
+  "dates_mentioned": ["dates"],
+  "key_facts": ["facts"]
 }`
         }
       ]);
 
-      const extracted = JSON.parse(result.response.text());
+      let responseText = result.response.text();
+      
+      responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      
+      const extracted = JSON.parse(responseText);
       allContent.push(extracted);
+      
+      console.log(`Successfully extracted from ${file.name}`);
     } catch (error) {
       console.error(`Failed to extract from ${file.name}:`, error);
+      console.error('Raw response:', result?.response?.text?.());
+      
       allContent.push({
         source: file.name,
-        error: "Failed to extract content"
+        type: "unknown",
+        claims: [],
+        people_mentioned: [],
+        dates_mentioned: [],
+        key_facts: [`Error extracting content: ${error.message}`]
       });
     }
   }
