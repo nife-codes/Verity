@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, GoogleAIFileManager } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -7,7 +7,6 @@ if (!API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(API_KEY);
-const fileManager = new GoogleAIFileManager(API_KEY);
 
 const MODELS = {
   FLASH: "gemini-3-flash-preview",
@@ -41,55 +40,40 @@ export async function testGeminiConnection() {
   }
 }
 
-export async function uploadFilesToGemini(files) {
-  const uploadedFiles = [];
-
-  for (const file of files) {
-    try {
-      const uploadResult = await fileManager.uploadFile(file, {
-        mimeType: file.type,
-        displayName: file.name
-      });
-
-      let fileStatus = await fileManager.getFile(uploadResult.name);
-      while (fileStatus.state === "PROCESSING") {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        fileStatus = await fileManager.getFile(uploadResult.name);
-      }
-
-      uploadedFiles.push({
-        uri: uploadResult.uri,
-        mimeType: uploadResult.mimeType,
-        name: file.name
-      });
-    } catch (error) {
-      console.error(`Failed to upload ${file.name}:`, error);
-    }
-  }
-
-  return uploadedFiles;
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64 = reader.result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = error => reject(error);
+  });
 }
 
-export async function extractContentFromFiles(uploadedFiles) {
+export async function extractContentFromFiles(files) {
   const model = genAI.getGenerativeModel({ 
     model: MODELS.FLASH
   });
 
   const allContent = [];
 
-  for (const fileData of uploadedFiles) {
+  for (const file of files) {
     try {
+      const base64Data = await fileToBase64(file);
+      
       const result = await model.generateContent([
         {
-          fileData: {
-            fileUri: fileData.uri,
-            mimeType: fileData.mimeType
+          inlineData: {
+            mimeType: file.type,
+            data: base64Data
           }
         },
         {
           text: `Extract information from this evidence file. Return JSON format:
 {
-  "source": "${fileData.name}",
+  "source": "${file.name}",
   "type": "audio|video|document|image",
   "claims": [
     {
@@ -110,9 +94,9 @@ export async function extractContentFromFiles(uploadedFiles) {
       const extracted = JSON.parse(result.response.text());
       allContent.push(extracted);
     } catch (error) {
-      console.error(`Failed to extract from ${fileData.name}:`, error);
+      console.error(`Failed to extract from ${file.name}:`, error);
       allContent.push({
-        source: fileData.name,
+        source: file.name,
         error: "Failed to extract content"
       });
     }

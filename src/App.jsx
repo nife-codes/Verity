@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import FileUpload from './components/FileUpload';
 import { MOCK_ANALYSIS } from './utils/mockData';
-import { uploadFilesToGemini, extractContentFromFiles, masterAnalysis } from './services/gemini';
+import { extractContentFromFiles, masterAnalysis } from './services/gemini';
 
 const USE_MOCK = false;
 
@@ -14,24 +14,26 @@ function App() {
   const handleFilesUploaded = async (files) => {
     setStage('processing');
     setError(null);
-
+  
     try {
       if (USE_MOCK) {
+        console.log('Using mock data');
         await new Promise(resolve => setTimeout(resolve, 2000));
         setAnalysis(MOCK_ANALYSIS);
         setStage('results');
         return;
       }
-
-      setProgress('Uploading files to Gemini...');
-      const uploadedFiles = await uploadFilesToGemini(files);
-
+  
+      console.log('Starting real analysis with', files.length, 'files');
+  
       setProgress('Extracting content from files...');
-      const extractedContent = await extractContentFromFiles(uploadedFiles);
-
+      const extractedContent = await extractContentFromFiles(files);
+      console.log('Extracted content:', extractedContent);
+  
       setProgress('Analyzing evidence and detecting contradictions...');
       const analysisResult = await masterAnalysis(extractedContent);
-
+      console.log('Analysis result:', analysisResult);
+  
       setAnalysis(analysisResult);
       setStage('results');
     } catch (err) {
