@@ -24,16 +24,15 @@ function App() {
 
     try {
       if (USE_MOCK) {
-        // Mock mode - simulate two-phase analysis
-        setProgress('📊 Processing files and extracting metadata...');
+        setProgress('Processing files and extracting metadata...');
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         const mockProcessed = await processFiles(files);
 
-        setProgress('⚡ Phase 1: Extracting data with Gemini Flash...');
+        setProgress('Phase 1: Extracting data with Gemini Flash...');
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        setProgress('🧠 Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
+        setProgress('Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         const mockResult = mockAnalyzeEvidence(mockProcessed.files);
@@ -52,16 +51,16 @@ function App() {
         return;
       }
 
-      // Real analysis with Gemini 3
-      setProgress('📊 Processing files and extracting metadata...');
+
+      setProgress('Processing files and extracting metadata...');
       const processResult = await processFiles(files);
 
       if (!processResult.success) {
         throw new Error(processResult.error || 'File processing failed');
       }
 
-      setProgress('⚡ Phase 1: Extracting data with Gemini Flash...');
-      setProgress('🧠 Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
+      setProgress('Phase 1: Extracting data with Gemini Flash...');
+      setProgress('Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
 
       const analysisResult = await analyzeEvidence(processResult.files);
 

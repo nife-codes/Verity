@@ -1,18 +1,9 @@
-/**
- * Gemini 3 Orchestration Service
- * Two-phase analysis system for forensic evidence verification
- * Phase 1: Gemini Flash - Fast extraction from multimodal files
- * Phase 2: Gemini Pro with Thinking Mode - Deep reasoning and contradiction detection
- */
-
-// Configuration
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyDghUlhCIYPzn5vNPxij6waAXW5URCf_AU';
-const USE_MOCK = false; // Set to true for development without API calls
+const USE_MOCK = false;
 
 const GEMINI_FLASH_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent';
 const GEMINI_PRO_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent';
 
-// Tool definitions for Gemini to call
 const TOOLS = [
     {
         name: 'extractTimestamp',
@@ -75,16 +66,10 @@ const TOOLS = [
     },
 ];
 
-/**
- * PHASE 1: Extract structured data from each file using Gemini Flash
- * @param {Object[]} files - Array of processed files with base64 data
- * @returns {Promise<Object>} Extraction results
- */
 export async function extractWithFlash(files) {
     try {
         const parts = [];
 
-        // Add instruction
         parts.push({
             text: `You are a forensic evidence extraction system. Analyze each file and extract:
 1. File type and format
@@ -112,7 +97,6 @@ Return a JSON object with this structure:
 Be thorough and precise. Extract EVERYTHING that could be forensically relevant.`,
         });
 
-        // Add each file
         files.forEach((file) => {
             if (file.base64) {
                 parts.push({
@@ -139,7 +123,7 @@ Be thorough and precise. Extract EVERYTHING that could be forensically relevant.
                     },
                 ],
                 generationConfig: {
-                    temperature: 0.1, // Low temperature for factual extraction
+                    temperature: 0.1,
                     maxOutputTokens: 8192,
                 },
             }),
@@ -153,7 +137,6 @@ Be thorough and precise. Extract EVERYTHING that could be forensically relevant.
         const data = await response.json();
         const extractedText = data.candidates[0]?.content?.parts[0]?.text;
 
-        // Parse JSON response
         const jsonMatch = extractedText.match(/\{[\s\S]*\}/);
         const extractedData = jsonMatch ? JSON.parse(jsonMatch[0]) : { files: [] };
 
@@ -161,7 +144,7 @@ Be thorough and precise. Extract EVERYTHING that could be forensically relevant.
             success: true,
             extractedData,
             rawResponse: extractedText,
-            thinkingSteps: [], // Flash doesn't use thinking mode
+            thinkingSteps: [],
         };
     } catch (error) {
         console.error('Error in Flash extraction:', error);
@@ -173,12 +156,6 @@ Be thorough and precise. Extract EVERYTHING that could be forensically relevant.
     }
 }
 
-/**
- * PHASE 2: Deep reasoning with Gemini Pro + Thinking Mode
- * @param {Object} extractedData - Data from Phase 1
- * @param {Object[]} files - Original files for reference
- * @returns {Promise<Object>} Analysis results with thinking process
- */
 export async function analyzeWithProThinking(extractedData, files) {
     try {
         const prompt = `You are a forensic evidence analyst. You have extracted data from multiple files.
@@ -234,7 +211,6 @@ Return a JSON object with:
                 generationConfig: {
                     temperature: 0.2,
                     maxOutputTokens: 8192,
-                    // Enable thinking mode
                     thinkingConfig: {
                         enabled: true,
                     },
@@ -249,7 +225,6 @@ Return a JSON object with:
 
         const data = await response.json();
 
-        // Extract thinking steps
         const thinkingSteps = [];
         const analysisText = data.candidates[0]?.content?.parts
             .map((part) => {
@@ -261,12 +236,10 @@ Return a JSON object with:
             .filter(Boolean)
             .join('\n');
 
-        // Handle tool calls if present
         const toolCalls = data.candidates[0]?.content?.parts
             .filter((part) => part.functionCall)
             .map((part) => part.functionCall);
 
-        // Parse JSON response
         const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
         const analysisResult = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
 
@@ -288,14 +261,8 @@ Return a JSON object with:
     }
 }
 
-/**
- * Main orchestration function - runs both phases
- * @param {Object[]} processedFiles - Files from fileProcessor.js
- * @returns {Promise<Object>} Complete analysis results
- */
 export async function analyzeEvidence(processedFiles) {
     try {
-        // Filter only successful files with base64 data
         const validFiles = processedFiles.filter((f) => f.success && f.base64);
 
         if (validFiles.length === 0) {
@@ -305,10 +272,9 @@ export async function analyzeEvidence(processedFiles) {
             };
         }
 
-        console.log(`🔍 Starting analysis of ${validFiles.length} files...`);
+        console.log(`Starting analysis of ${validFiles.length} files...`);
 
-        // PHASE 1: Extract with Flash
-        console.log('⚡ Phase 1: Extracting data with Gemini Flash...');
+        console.log('Phase 1: Extracting data with Gemini Flash...');
         const extractionResult = await extractWithFlash(validFiles);
 
         if (!extractionResult.success) {
@@ -319,10 +285,9 @@ export async function analyzeEvidence(processedFiles) {
             };
         }
 
-        console.log('✅ Extraction complete');
+        console.log('Extraction complete');
 
-        // PHASE 2: Analyze with Pro + Thinking
-        console.log('🧠 Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
+        console.log('Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
         const analysisResult = await analyzeWithProThinking(
             extractionResult.extractedData,
             validFiles
@@ -333,13 +298,12 @@ export async function analyzeEvidence(processedFiles) {
                 success: false,
                 error: `Analysis failed: ${analysisResult.error}`,
                 phase: 'analysis',
-                extractionResult, // Return extraction even if analysis fails
+                extractionResult,
             };
         }
 
-        console.log('✅ Analysis complete');
+        console.log('Analysis complete');
 
-        // Combine results
         return {
             success: true,
             extraction: {
@@ -364,9 +328,6 @@ export async function analyzeEvidence(processedFiles) {
     }
 }
 
-/**
- * Mock analysis for development (when USE_MOCK is true in fileProcessor)
- */
 export function mockAnalyzeEvidence(processedFiles) {
     return {
         success: true,
@@ -406,9 +367,9 @@ export function mockAnalyzeEvidence(processedFiles) {
                 reasoning: 'This is a mock analysis for development purposes.',
             },
             thinkingSteps: [
-                '🤔 Analyzing timestamps across files...',
-                '🤔 Cross-referencing metadata...',
-                '🤔 Checking for contradictions...',
+                'Analyzing timestamps across files...',
+                'Cross-referencing metadata...',
+                'Checking for contradictions...',
             ],
             toolCalls: [],
             rawResponse: 'Mock analysis response',
