@@ -6,7 +6,7 @@ export default function DownloadReport({ analysis }) {
 Generated: ${new Date().toLocaleString()}
 
 ========================================
-REASONING PROCESS
+REASONING PROCESS 
 ========================================
 
 ${analysis.thinking}
