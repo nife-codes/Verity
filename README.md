@@ -32,7 +32,7 @@ Verity uses **Gemini 3's advanced reasoning** to:
 
 ## Demo
 
-[Live Demo](https://verity.vercel.app) | [Demo Video](https://youtube.com/...)
+[Live Demo](...) | [Demo Video](https://youtube.com/...)
 
 ## Tech Stack
 
@@ -45,7 +45,7 @@ Verity uses **Gemini 3's advanced reasoning** to:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/verity.git
+git clone https://github.com/nife-codes/verity.git
 cd verity
 
 # Install dependencies
