@@ -44,6 +44,7 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
   if (!steps || steps.length === 0) return null;
 
   const getStepIcon = (step) => {
+    if (!step || typeof step !== 'string') return BrainIcon;
     const stepLower = step.toLowerCase();
     if (stepLower.includes('extract') || stepLower.includes('processing')) return BarChartIcon;
     if (stepLower.includes('analyz') || stepLower.includes('examin')) return SearchIcon;
@@ -57,6 +58,7 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
   };
 
   const getStepColor = (step) => {
+    if (!step || typeof step !== 'string') return 'border-blue-500 bg-blue-50';
     const stepLower = step.toLowerCase();
     if (stepLower.includes('contradiction') || stepLower.includes('conflict')) return 'border-red-500 bg-red-50';
     if (stepLower.includes('complete') || stepLower.includes('success')) return 'border-green-500 bg-green-50';
