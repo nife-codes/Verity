@@ -129,7 +129,10 @@ function App() {
               Launch Forensic Analysis
             </button>
 
-            <button className="px-8 py-4 border border-slate-700 text-slate-300 font-semibold rounded-lg hover:border-emerald-500 hover:text-emerald-400 transition-all duration-200">
+            <button
+              onClick={handleTryDemo}
+              className="px-8 py-4 border border-slate-700 text-slate-300 font-semibold rounded-lg hover:border-emerald-500 hover:text-emerald-400 transition-all duration-200"
+            >
               View Sample Audit
             </button>
           </motion.div>
