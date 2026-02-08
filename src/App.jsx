@@ -2,7 +2,8 @@
 import { motion } from 'framer-motion';
 import FileUpload from './components/FileUpload';
 import { MOCK_ANALYSIS } from './utils/mockData';
-import { extractContentFromFiles, masterAnalysis } from './services/gemini';
+import { analyzeEvidence, mockAnalyzeEvidence } from './services/gemini';
+import { processFiles } from './services/fileProcessor';
 import ThinkingMode from './components/ThinkingMode';
 import Timeline from './components/Timeline';
 import Contradictions from './components/Contradictions';
@@ -23,21 +24,64 @@ function App() {
 
     try {
       if (USE_MOCK) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setAnalysis(MOCK_ANALYSIS);
+        // Mock mode - simulate two-phase analysis
+        setProgress('📊 Processing files and extracting metadata...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const mockProcessed = await processFiles(files);
+
+        setProgress('⚡ Phase 1: Extracting data with Gemini Flash...');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        setProgress('🧠 Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const mockResult = mockAnalyzeEvidence(mockProcessed.files);
+
+        // Transform to match expected format
+        setAnalysis({
+          thinking: mockResult.analysis.thinkingSteps.join('\n\n'),
+          thinkingSteps: mockResult.analysis.thinkingSteps,
+          timeline: mockResult.analysis.result.timeline,
+          contradictions: mockResult.analysis.result.contradictions,
+          summary: mockResult.analysis.result.verdict,
+          confidenceScores: mockResult.analysis.result.confidenceScores,
+          rawResult: mockResult
+        });
         setStage('results');
         return;
       }
 
-      setProgress('Extracting content from files...');
-      const extractedContent = await extractContentFromFiles(files);
+      // Real analysis with Gemini 3
+      setProgress('📊 Processing files and extracting metadata...');
+      const processResult = await processFiles(files);
 
-      setProgress('Analyzing evidence and detecting contradictions...');
-      const analysisResult = await masterAnalysis(extractedContent);
+      if (!processResult.success) {
+        throw new Error(processResult.error || 'File processing failed');
+      }
 
-      setAnalysis(analysisResult);
+      setProgress('⚡ Phase 1: Extracting data with Gemini Flash...');
+      setProgress('🧠 Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
+
+      const analysisResult = await analyzeEvidence(processResult.files);
+
+      if (!analysisResult.success) {
+        throw new Error(analysisResult.error || 'Analysis failed');
+      }
+
+      // Transform to match expected format
+      setAnalysis({
+        thinking: analysisResult.analysis.thinkingSteps.join('\n\n'),
+        thinkingSteps: analysisResult.analysis.thinkingSteps,
+        timeline: analysisResult.analysis.result.timeline || [],
+        contradictions: analysisResult.analysis.result.contradictions || [],
+        summary: analysisResult.analysis.result.verdict || 'Analysis complete',
+        confidenceScores: analysisResult.analysis.result.confidenceScores,
+        rawResult: analysisResult
+      });
       setStage('results');
     } catch (err) {
+      console.error('Analysis error:', err);
       setError(err.message || 'Analysis failed. Please try again.');
       setStage('error');
     }
@@ -46,7 +90,7 @@ function App() {
   const handleTryDemo = () => {
     setStage('processing');
     setProgress('Loading demo analysis');
-         
+
     setTimeout(() => {
       setAnalysis(MOCK_ANALYSIS);
       setStage('results');
@@ -58,22 +102,22 @@ function App() {
       <div className="min-h-screen bg-black relative overflow-hidden">
         <BubbleScene />
         <div className="relative z-10 max-w-6xl mx-auto px-6 py-20">
-          
-          <motion.header 
+
+          <motion.header
             className="text-center mb-16"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-8xl font-bold text-white mb-4 tracking-tight" style={{ fontFamily: 'Anta, sans-serif' }}>
-          VERITY
-          </h1>
+              VERITY
+            </h1>
             <p className="text-sm uppercase tracking-widest text-emerald-400 mb-8 font-mono">
               Forensic Evidence Verification System
             </p>
           </motion.header>
 
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center mb-20"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -85,13 +129,13 @@ function App() {
             >
               Launch Forensic Analysis
             </button>
-            
+
             <button className="px-8 py-4 border border-slate-700 text-slate-300 font-semibold rounded-lg hover:border-emerald-500 hover:text-emerald-400 transition-all duration-200">
               View Sample Audit
             </button>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid md:grid-cols-3 gap-6 mb-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -105,7 +149,7 @@ function App() {
                 Handles documents, images, audio, and video in a single analysis
               </p>
             </div>
-            
+
             <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-lg backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300">
               <h3 className="text-base font-semibold mb-2 text-white uppercase tracking-wide font-mono">
                 Reasoning Transparency
@@ -114,7 +158,7 @@ function App() {
                 Displays step-by-step analysis process and confidence levels
               </p>
             </div>
-            
+
             <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-lg backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300">
               <h3 className="text-base font-semibold mb-2 text-white uppercase tracking-wide font-mono">
                 Source Assessment
@@ -138,7 +182,7 @@ function App() {
             <FileUpload onFilesUploaded={handleFilesUploaded} />
           </motion.div>
 
-          <motion.footer 
+          <motion.footer
             className="mt-16 pt-8 border-t border-slate-800 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -162,11 +206,11 @@ function App() {
               <div className="relative mb-6">
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-blue-700"></div>
               </div>
-              
+
               <h3 className="text-lg font-semibold text-slate-900 mb-2">
                 Processing Evidence
               </h3>
-              
+
               <div className="w-full space-y-3 mt-6">
                 <div className="flex items-center gap-3">
                   <div className={`w-2 h-2 rounded-full ${progress.includes('Extracting') || progress.includes('Analyzing') ? 'bg-blue-700' : 'bg-slate-300'}`}></div>
@@ -174,7 +218,7 @@ function App() {
                     {progress.includes('Extracting') ? 'Extracting content...' : progress.includes('Extracting') ? 'Content extracted' : 'Awaiting extraction'}
                   </p>
                 </div>
-                
+
                 <div className="flex items-center gap-3">
                   <div className={`w-2 h-2 rounded-full ${progress.includes('Analyzing') ? 'bg-blue-700 animate-pulse' : progress.includes('Loading') ? 'bg-blue-700' : 'bg-slate-300'}`}></div>
                   <p className="text-sm text-slate-600">
@@ -182,7 +226,7 @@ function App() {
                   </p>
                 </div>
               </div>
-              
+
               {progress && (
                 <p className="text-xs text-slate-400 mt-6 text-center">
                   {progress}
@@ -229,8 +273,8 @@ function App() {
               </button>
             </div>
           </div>
-          
-          <ThinkingMode thinkingText={analysis.thinking} />
+
+          <ThinkingMode thinkingText={analysis.thinking} thinkingSteps={analysis.thinkingSteps} />
           <Timeline events={analysis.timeline} />
           <Contradictions contradictions={analysis.contradictions} />
 
