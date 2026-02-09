@@ -12,7 +12,7 @@ import Contradictions from './components/Contradictions';
 import ContradictionMap from './components/ContradictionMap';
 import EvidenceCards from './components/EvidenceCards';
 import DownloadReport from './components/DownloadReport';
-import BubbleScene from './components/BubbleScene';
+
 
 const USE_MOCK = false;
 
@@ -153,8 +153,8 @@ function App() {
 
   if (stage === 'upload') {
     return (
-      <div className="min-h-screen bg-black relative overflow-hidden">
-        <BubbleScene />
+      <div className="min-h-screen cyber-grid-bg relative overflow-hidden">
+
         {apiStatus && <ApiStatusBadge status={apiStatus} />}
         <div className="relative z-10 max-w-6xl mx-auto px-6 py-20">
 

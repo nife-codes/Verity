@@ -10,5 +10,45 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background: #f9fafb;
+  background: #000000;
+}
+
+/* Cyber Grid Background */
+.cyber-grid-bg {
+  background: 
+    linear-gradient(0deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(180deg, #000000 0%, #0a0a1a 100%);
+  background-size: 50px 50px, 50px 50px, 100% 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scanning line animation */
+.cyber-grid-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.8) 50%, 
+    transparent 100%
+  );
+  animation: scan 4s linear infinite;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  z-index: 1;
+}
+
+@keyframes scan {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Ensure content is above the scanning line */
+.cyber-grid-bg > * {
+  position: relative;
+  z-index: 10;
 }
