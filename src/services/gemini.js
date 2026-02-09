@@ -295,7 +295,7 @@ export async function mockAnalyzeEvidence(files) {
         thinkingSteps: analysisResult.thinkingSteps,
         timeline: analysisResult.analysis.timeline,
         contradictions: analysisResult.analysis.contradictions,
-        tamperingIndicators: analysisResult.analysis.tampering Indicators,
+        tamperingIndicators: analysisResult.analysis.tamperingIndicators,
         confidenceScores: analysisResult.analysis.confidenceScores,
         summary: analysisResult.analysis.verdict,
         rawResult: extractionResult,
