@@ -17,35 +17,19 @@ export async function extractWithFlash(files) {
     try {
         const model = genAI.getGenerativeModel({ model: FLASH_MODEL });
 
-        // Convert files to base64
-        const fileParts = await Promise.all(
-            files.map(async (file) => {
-                // If file already has base64Data, use it
-                if (file.base64Data) {
-                    return {
-                        inlineData: {
-                            data: file.base64Data.split(',')[1],
-                            mimeType: file.mimeType,
-                        },
-                    };
-                }
+        // Convert processed files to Gemini format
+        const fileParts = files
+            .filter(file => file.success && file.base64) // Only use successfully processed files
+            .map((file) => ({
+                inlineData: {
+                    data: file.base64, // Already base64 encoded from fileProcessor
+                    mimeType: file.fileType,
+                },
+            }));
 
-                // Otherwise, read the file
-                const base64 = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-
-                return {
-                    inlineData: {
-                        data: base64.split(',')[1],
-                        mimeType: file.type || file.mimeType,
-                    },
-                };
-            })
-        );
+        if (fileParts.length === 0) {
+            throw new Error('No valid files to process');
+        }
 
         const prompt = `You are a forensic data extraction specialist. Extract ALL relevant information from these files.
 
