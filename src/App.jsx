@@ -159,7 +159,7 @@ function App() {
         <div className="relative z-10 max-w-6xl mx-auto px-6 py-20">
 
           <motion.header
-            className="text-center mb-16"
+            className="text-center mb-12"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -167,52 +167,84 @@ function App() {
             <h1 className="text-8xl font-bold text-white mb-4 tracking-tight" style={{ fontFamily: 'Anta, sans-serif' }}>
               VERITY
             </h1>
-            <p className="text-sm uppercase tracking-widest text-emerald-400 mb-8 font-mono">
+            <p className="text-sm uppercase tracking-widest text-emerald-400 mb-2 font-mono">
               Forensic Evidence Verification System
+            </p>
+            <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+              Powered by Gemini 3 Pro's advanced reasoning capabilities
             </p>
           </motion.header>
 
-          {/* Sample Selector */}
-          <SampleSelector onSelectSample={handleSampleSelected} />
+          {/* PRIMARY CTA - Sample Evidence */}
+          <motion.div
+            className="mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3">
+                <span className="text-4xl">🎯</span>
+                Try Sample Evidence
+                <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500 text-emerald-400 text-xs font-mono rounded-full">
+                  RECOMMENDED
+                </span>
+              </h2>
+              <p className="text-slate-400 text-sm max-w-2xl mx-auto">
+                Pre-validated Gemini 3 Pro analysis • Works instantly • No quota limits
+              </p>
+            </div>
+
+            {/* Sample Selector - Now the star of the show */}
+            <SampleSelector onSelectSample={handleSampleSelected} />
+          </motion.div>
 
           {/* Divider */}
-          <div className="relative my-12">
+          <div className="relative my-16">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-800"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-black text-slate-500 uppercase tracking-wider font-mono">
-                Or Upload Custom Evidence
+                Or Upload Your Own Evidence
               </span>
             </div>
           </div>
 
+          {/* SECONDARY OPTION - Custom Upload */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-20"
+            className="mb-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <button
-              onClick={handleTryDemo}
-              className="px-8 py-4 bg-emerald-500 text-black font-semibold rounded-lg hover:bg-emerald-400 transition-all duration-200"
-            >
-              Launch Forensic Analysis
-            </button>
+            <div className="max-w-2xl mx-auto text-center">
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Custom Evidence Analysis
+              </h3>
+              <p className="text-slate-400 text-sm mb-6">
+                Upload your own files for live analysis with automatic fallback if quota exceeded
+              </p>
 
-            <button
-              onClick={handleTryDemo}
-              className="px-8 py-4 border border-slate-700 text-slate-300 font-semibold rounded-lg hover:border-emerald-500 hover:text-emerald-400 transition-all duration-200"
-            >
-              View Sample Audit
-            </button>
+              <button
+                onClick={handleTryDemo}
+                className="px-8 py-4 bg-slate-800 border border-slate-700 text-slate-300 font-semibold rounded-lg hover:border-emerald-500 hover:text-emerald-400 hover:bg-slate-800/80 transition-all duration-200"
+              >
+                Launch Custom Analysis
+              </button>
+
+              <p className="text-xs text-slate-500 mt-4 font-mono">
+                Note: May use Gemini 2.0 Flash if Gemini 3 quota is exceeded
+              </p>
+            </div>
           </motion.div>
 
+          {/* Feature Cards */}
           <motion.div
-            className="grid md:grid-cols-3 gap-6 mb-16"
+            className="grid md:grid-cols-3 gap-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
             <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-lg backdrop-blur-sm hover:border-emerald-500/50 transition-all duration-300">
               <h3 className="text-base font-semibold mb-2 text-white uppercase tracking-wide font-mono">
