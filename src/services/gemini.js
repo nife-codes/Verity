@@ -6,8 +6,10 @@ const USE_MOCK = false;
 // Initialize the Gemini API client
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Use Gemini 3 Pro with Thinking Mode
-const FLASH_MODEL = 'gemini-3-pro-preview';
+// Use Gemini 3 Flash for fast extraction
+const FLASH_MODEL = 'gemini-3-flash-preview';
+// Use Gemini 3 Pro for deep analysis with thinking mode
+const PRO_MODEL = 'gemini-3-pro-preview';
 
 export async function extractWithFlash(files) {
     if (USE_MOCK) {
@@ -36,7 +38,7 @@ export async function extractWithFlash(files) {
 For EACH file, extract:
 1. All timestamps (from metadata AND content)
 2. All claims, statements, or events mentioned
-3. Any identifying information (names, locations, etc.)
+3. Any identifying information (names, locations, entities)
 4. Key facts or data points
 
 Return a JSON object with this structure:
@@ -72,14 +74,14 @@ Return a JSON object with this structure:
     }
 }
 
-export async function analyzeWithProThinking(extractedData) {
+export async function analyzeWithProThinking(extractedData, files) {
     if (USE_MOCK) {
         return mockAnalyzeWithProThinking(extractedData);
     }
 
     try {
         const model = genAI.getGenerativeModel({
-            model: FLASH_MODEL,
+            model: PRO_MODEL,
             generationConfig: {
                 temperature: 0.2,
                 maxOutputTokens: 8192,
@@ -121,21 +123,35 @@ After showing your reasoning steps, return a JSON object with:
   "reasoning": "..."
 }`;
 
-        const result = await model.generateContent(prompt);
-        const response = result.response;
-        const text = response.text();
+        // Convert processed files to Gemini format for context
+        const fileParts = files
+            .filter(file => file.success && file.base64)
+            .map((file) => ({
+                inlineData: {
+                    data: file.base64,
+                    mimeType: file.fileType,
+                },
+            }));
 
-        // Extract thinking steps from the response
-        const thinkingSteps = [];
-        const lines = text.split('\n');
-        for (const line of lines) {
-            if (line.match(/^Step \d+:/i) || line.match(/^\d+\./)) {
-                thinkingSteps.push(line.trim());
+        // Use streaming to get thinking steps progressively
+        const result = await model.generateContentStream([prompt, ...fileParts]);
+
+        let thinkingSteps = [];
+        let fullText = '';
+
+        for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            fullText += chunkText;
+
+            // Parse thinking steps (lines starting with "Step N:")
+            const stepMatches = chunkText.match(/Step \d+:.*$/gm);
+            if (stepMatches) {
+                thinkingSteps.push(...stepMatches.map(s => s.trim()));
             }
         }
 
         // Extract JSON from response
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        const jsonMatch = fullText.match(/\{[\s\S]*\}/);
         const analysisResult = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
 
         return {
@@ -234,13 +250,15 @@ export async function mockAnalyzeWithProThinking(extractedData) {
 
 export async function analyzeEvidence(files) {
     try {
+        console.log('Phase 1: Extracting with Gemini 3 Flash...');
         const extractionResult = await extractWithFlash(files);
 
         if (!extractionResult.success) {
             throw new Error('Extraction failed');
         }
 
-        const analysisResult = await analyzeWithProThinking(extractionResult.extractedData);
+        console.log('Phase 2: Analyzing with Gemini 3 Pro (Thinking Mode)...');
+        const analysisResult = await analyzeWithProThinking(extractionResult.extractedData, files);
 
         if (!analysisResult.success) {
             throw new Error('Analysis failed');
@@ -277,7 +295,7 @@ export async function mockAnalyzeEvidence(files) {
         thinkingSteps: analysisResult.thinkingSteps,
         timeline: analysisResult.analysis.timeline,
         contradictions: analysisResult.analysis.contradictions,
-        tamperingIndicators: analysisResult.analysis.tamperingIndicators,
+        tamperingIndicators: analysisResult.analysis.tampering Indicators,
         confidenceScores: analysisResult.analysis.confidenceScores,
         summary: analysisResult.analysis.verdict,
         rawResult: extractionResult,
