@@ -7,6 +7,8 @@ import { processFiles } from './services/fileProcessor';
 import ThinkingMode from './components/ThinkingMode';
 import Timeline from './components/Timeline';
 import Contradictions from './components/Contradictions';
+import ContradictionMap from './components/ContradictionMap';
+import EvidenceCards from './components/EvidenceCards';
 import DownloadReport from './components/DownloadReport';
 import BubbleScene from './components/BubbleScene';
 
@@ -263,7 +265,12 @@ function App() {
     return (
       <div className="min-h-screen bg-slate-50 py-12">
         <div className="max-w-6xl mx-auto px-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
+          >
             <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">Analysis Results</h1>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <DownloadReport analysis={analysis} />
@@ -274,17 +281,52 @@ function App() {
                 New Analysis
               </button>
             </div>
-          </div>
+          </motion.div>
 
           <ThinkingMode thinkingText={analysis.thinking} thinkingSteps={analysis.thinkingSteps} />
-          <Timeline events={analysis.timeline} />
-          <Contradictions contradictions={analysis.contradictions} />
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            <EvidenceCards files={analysis.rawResult?.files || []} analysis={analysis} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            <ContradictionMap contradictions={analysis.contradictions} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+          >
+            <Timeline events={analysis.timeline} />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.6 }}
+          >
+            <Contradictions contradictions={analysis.contradictions} />
+          </motion.div>
 
           {analysis.summary && (
-            <div className="bg-white border border-slate-200 rounded-lg p-6 mt-6">
-              <h2 className="text-xl font-semibold mb-3 text-slate-900">Summary</h2>
-              <p className="text-slate-700 leading-relaxed">{analysis.summary}</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1, duration: 0.6 }}
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-lg p-6 mt-6 shadow-md"
+            >
+              <h2 className="text-xl font-semibold mb-3 text-slate-900">Final Verdict</h2>
+              <p className="text-slate-700 leading-relaxed text-lg">{analysis.summary}</p>
+            </motion.div>
           )}
         </div>
       </div>

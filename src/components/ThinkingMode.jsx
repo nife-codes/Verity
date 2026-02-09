@@ -16,6 +16,8 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
   const [displayedSteps, setDisplayedSteps] = useState([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
+  const [typingText, setTypingText] = useState('');
+  const [currentTypingStep, setCurrentTypingStep] = useState(0);
 
   const steps = thinkingSteps || (thinkingText ? thinkingText.split('\n\n').filter(s => s.trim()) : []);
 
@@ -25,18 +27,34 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
     setDisplayedSteps([]);
     setCurrentStepIndex(0);
     setIsTyping(true);
+    setCurrentTypingStep(0);
 
-    let index = 0;
+    let stepIndex = 0;
     const interval = setInterval(() => {
-      if (index < steps.length) {
-        setDisplayedSteps(prev => [...prev, steps[index]]);
-        setCurrentStepIndex(index);
-        index++;
+      if (stepIndex < steps.length) {
+        const step = steps[stepIndex];
+        setCurrentTypingStep(stepIndex);
+
+        let charIndex = 0;
+        setTypingText('');
+
+        const typingInterval = setInterval(() => {
+          if (charIndex < step.length) {
+            setTypingText(step.substring(0, charIndex + 1));
+            charIndex++;
+          } else {
+            clearInterval(typingInterval);
+            setDisplayedSteps(prev => [...prev, step]);
+            setCurrentStepIndex(stepIndex);
+            stepIndex++;
+          }
+        }, 20);
       } else {
         setIsTyping(false);
+        setTypingText('');
         clearInterval(interval);
       }
-    }, 800);
+    }, 1200);
 
     return () => clearInterval(interval);
   }, [thinkingText, thinkingSteps]);
@@ -80,7 +98,12 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
         </div>
         {isTyping && (
           <div className="flex items-center gap-2 text-xs text-blue-600 font-mono">
-            <div className="animate-pulse">●</div>
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ repeat: Infinity, duration: 1 }}
+            >
+              ●
+            </motion.div>
             <span>Analyzing...</span>
           </div>
         )}
@@ -105,9 +128,6 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
                       <span className="text-xs font-mono text-slate-500">
                         Step {index + 1}/{steps.length}
                       </span>
-                      {index === currentStepIndex && isTyping && (
-                        <span className="text-blue-600 animate-pulse text-xs">●</span>
-                      )}
                     </div>
                     <p className="text-sm text-slate-800 leading-relaxed">
                       {step}
@@ -119,7 +139,44 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
           })}
         </AnimatePresence>
 
-        {isTyping && displayedSteps.length < steps.length && (
+        {isTyping && typingText && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`border-l-2 ${getStepColor(steps[currentTypingStep])} pl-4 py-3 rounded-r-lg`}
+          >
+            <div className="flex items-start gap-3">
+              {(() => {
+                const IconComponent = getStepIcon(steps[currentTypingStep]);
+                return <IconComponent className="w-5 h-5 flex-shrink-0 mt-0.5" />;
+              })()}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-mono text-slate-500">
+                    Step {currentTypingStep + 1}/{steps.length}
+                  </span>
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.8 }}
+                    className="text-blue-600"
+                  >
+                    ●
+                  </motion.span>
+                </div>
+                <p className="text-sm text-slate-800 leading-relaxed">
+                  {typingText}
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ repeat: Infinity, duration: 0.5 }}
+                    className="inline-block w-0.5 h-4 bg-blue-600 ml-1"
+                  />
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {isTyping && !typingText && displayedSteps.length < steps.length && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

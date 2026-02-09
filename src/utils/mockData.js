@@ -84,5 +84,15 @@ Conclusion: CEO is lying. Documentary proof contradicts testimony.`,
     content: 0.92
   },
 
-  summary: "Documentary evidence proves CEO had knowledge by March 5. March 15 claim is false. Stock sales suggest insider trading."
+  summary: "Documentary evidence proves CEO had knowledge by March 5. March 15 claim is false. Stock sales suggest insider trading.",
+
+  rawResult: {
+    files: [
+      { fileName: 'security_log.png', category: 'image' },
+      { fileName: 'stock_trades.pdf', category: 'document' },
+      { fileName: 'email_evidence.pdf', category: 'document' },
+      { fileName: 'board_meeting_transcript.pdf', category: 'document' },
+      { fileName: 'ceo_interview.mp3', category: 'audio' }
+    ]
+  }
 };
