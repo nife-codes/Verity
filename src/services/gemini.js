@@ -1,4 +1,4 @@
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyDghUlhCIYPzn5vNPxij6waAXW5URCf_AU';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const USE_MOCK = false;
 
 const GEMINI_FLASH_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent';
