@@ -6,10 +6,10 @@ const USE_MOCK = false;
 // Initialize the Gemini API client
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Use Gemini 3 Flash for stable, production-ready analysis
-// (Gemini 3 Pro preview has 0 free tier quota - only use in AI Studio for testing)
-const FLASH_MODEL = 'gemini-3-flash';
-const PRO_MODEL = 'gemini-3-flash'; // Using Flash for both phases due to Pro quota constraints
+// Use Gemini 2.0 Flash for stable, production-ready analysis
+// (Gemini 3 models are preview-only with limited quota)
+const FLASH_MODEL = 'gemini-2.0-flash-exp';
+const PRO_MODEL = 'gemini-2.0-flash-exp'; // Using Flash for both phases - stable and reliable
 
 export async function extractWithFlash(files) {
     if (USE_MOCK) {
