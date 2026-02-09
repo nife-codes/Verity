@@ -13,80 +13,53 @@ import {
 } from './Icons';
 
 export default function ThinkingMode({ thinkingText, thinkingSteps }) {
-  const [displayedSteps, setDisplayedSteps] = useState([]);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [isTyping, setIsTyping] = useState(true);
-  const [typingText, setTypingText] = useState('');
-  const [currentTypingStep, setCurrentTypingStep] = useState(0);
-
+  // Use the provided steps directly, no complex animation logic
   const steps = thinkingSteps || (thinkingText ? thinkingText.split('\n\n').filter(s => s.trim()) : []);
-
-  useEffect(() => {
-    if (!steps || steps.length === 0) return;
-
-    setDisplayedSteps([]);
-    setCurrentStepIndex(0);
-    setIsTyping(true);
-    setCurrentTypingStep(0);
-
-    let stepIndex = 0;
-    const interval = setInterval(() => {
-      if (stepIndex < steps.length) {
-        const step = steps[stepIndex];
-        setCurrentTypingStep(stepIndex);
-
-        let charIndex = 0;
-        setTypingText('');
-
-        const typingInterval = setInterval(() => {
-          if (charIndex < step.length) {
-            setTypingText(step.substring(0, charIndex + 1));
-            charIndex++;
-          } else {
-            clearInterval(typingInterval);
-            setDisplayedSteps(prev => [...prev, step]);
-            setCurrentStepIndex(stepIndex);
-            stepIndex++;
-          }
-        }, 20);
-      } else {
-        setIsTyping(false);
-        setTypingText('');
-        clearInterval(interval);
-      }
-    }, 1200);
-
-    return () => clearInterval(interval);
-  }, [thinkingText, thinkingSteps]);
-
-  if (!steps || steps.length === 0) return null;
+  const totalSteps = 6; // Fixed total for Gemini 3 Pro analysis
+  const isAnalyzing = steps.length < totalSteps;
 
   const getStepIcon = (step) => {
     if (!step || typeof step !== 'string') return BrainIcon;
     const stepLower = step.toLowerCase();
     if (stepLower.includes('extract') || stepLower.includes('processing')) return BarChartIcon;
     if (stepLower.includes('analyz') || stepLower.includes('examin')) return SearchIcon;
-    if (stepLower.includes('contradiction') || stepLower.includes('conflict')) return ExclamationIcon;
-    if (stepLower.includes('timeline') || stepLower.includes('chronolog')) return CalendarIcon;
+    if (stepLower.includes('contradiction') || stepLower.includes('conflict') || stepLower.includes('evaluating')) return ExclamationIcon;
+    if (stepLower.includes('timeline') || stepLower.includes('chronolog') || stepLower.includes('temporal')) return CalendarIcon;
     if (stepLower.includes('cross-reference') || stepLower.includes('compar')) return LinkIcon;
     if (stepLower.includes('metadata') || stepLower.includes('timestamp')) return ClockIcon;
     if (stepLower.includes('complete') || stepLower.includes('success')) return CheckCircleIcon;
-    if (stepLower.includes('confidence') || stepLower.includes('score')) return TrendingUpIcon;
+    if (stepLower.includes('confidence') || stepLower.includes('score') || stepLower.includes('stock') || stepLower.includes('transaction')) return TrendingUpIcon;
     return BrainIcon;
   };
 
   const getStepColor = (step) => {
     if (!step || typeof step !== 'string') return 'border-blue-500 bg-blue-50';
     const stepLower = step.toLowerCase();
-    if (stepLower.includes('contradiction') || stepLower.includes('conflict')) return 'border-red-500 bg-red-50';
-    if (stepLower.includes('complete') || stepLower.includes('success')) return 'border-green-500 bg-green-50';
-    if (stepLower.includes('warning') || stepLower.includes('caution')) return 'border-yellow-500 bg-yellow-50';
+    if (stepLower.includes('contradiction') || stepLower.includes('conflict') || stepLower.includes('evaluating')) {
+      return 'border-red-500 bg-red-50';
+    }
+    if (stepLower.includes('timeline') || stepLower.includes('temporal') || stepLower.includes('constructing')) {
+      return 'border-purple-500 bg-purple-50';
+    }
+    if (stepLower.includes('stock') || stepLower.includes('transaction') || stepLower.includes('uncovering')) {
+      return 'border-orange-500 bg-orange-50';
+    }
+    if (stepLower.includes('investigating') || stepLower.includes('anomal')) {
+      return 'border-yellow-500 bg-yellow-50';
+    }
     return 'border-blue-500 bg-blue-50';
   };
 
+  if (!steps || steps.length === 0) return null;
+
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-lg mb-6 shadow-sm">
-      <div className="flex items-start gap-3 mb-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 mb-6 border border-blue-200"
+    >
+      <div className="flex items-center justify-between mb-4">
         <BrainIcon className="w-6 h-6 text-blue-600" />
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-blue-900 mb-1">
@@ -96,7 +69,7 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
             Gemini 3 Pro • Thinking Mode Active
           </p>
         </div>
-        {isTyping && (
+        {isAnalyzing && (
           <div className="flex items-center gap-2 text-xs text-blue-600 font-mono">
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
@@ -110,14 +83,15 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
       </div>
 
       <div className="space-y-3">
-        <AnimatePresence>
-          {displayedSteps.map((step, index) => {
+        <AnimatePresence mode="popLayout">
+          {steps.map((step, index) => {
             const IconComponent = getStepIcon(step);
             return (
               <motion.div
-                key={index}
+                key={`step-${index}`}
                 initial={{ opacity: 0, x: -20, height: 0 }}
                 animate={{ opacity: 1, x: 0, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
                 className={`border-l-2 ${getStepColor(step)} pl-4 py-3 rounded-r-lg`}
               >
@@ -126,7 +100,7 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-mono text-slate-500">
-                        Step {index + 1}/{steps.length}
+                        Step {index + 1}/{totalSteps}
                       </span>
                     </div>
                     <p className="text-sm text-slate-800 leading-relaxed">
@@ -138,72 +112,20 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
             );
           })}
         </AnimatePresence>
-
-        {isTyping && typingText && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={`border-l-2 ${getStepColor(steps[currentTypingStep])} pl-4 py-3 rounded-r-lg`}
-          >
-            <div className="flex items-start gap-3">
-              {(() => {
-                const IconComponent = getStepIcon(steps[currentTypingStep]);
-                return <IconComponent className="w-5 h-5 flex-shrink-0 mt-0.5" />;
-              })()}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-mono text-slate-500">
-                    Step {currentTypingStep + 1}/{steps.length}
-                  </span>
-                  <motion.span
-                    animate={{ opacity: [1, 0] }}
-                    transition={{ repeat: Infinity, duration: 0.8 }}
-                    className="text-blue-600"
-                  >
-                    ●
-                  </motion.span>
-                </div>
-                <p className="text-sm text-slate-800 leading-relaxed">
-                  {typingText}
-                  <motion.span
-                    animate={{ opacity: [1, 0] }}
-                    transition={{ repeat: Infinity, duration: 0.5 }}
-                    className="inline-block w-0.5 h-4 bg-blue-600 ml-1"
-                  />
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {isTyping && !typingText && displayedSteps.length < steps.length && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="border-l-2 border-slate-300 bg-slate-50 pl-4 py-3 rounded-r-lg"
-          >
-            <div className="flex items-center gap-3">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-300 border-t-blue-600"></div>
-              <span className="text-xs text-slate-500 font-mono">
-                Processing next step...
-              </span>
-            </div>
-          </motion.div>
-        )}
       </div>
 
-      {!isTyping && (
+      {!isAnalyzing && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
           className="mt-4 pt-4 border-t border-blue-200"
         >
-          <p className="text-xs text-blue-600 font-mono text-center">
-            ✓ Reasoning complete • {steps.length} steps analyzed
-          </p>
+          <div className="flex items-center gap-2 text-sm text-green-600">
+            <CheckCircleIcon className="w-5 h-5" />
+            <span className="font-medium">Analysis Complete</span>
+          </div>
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
