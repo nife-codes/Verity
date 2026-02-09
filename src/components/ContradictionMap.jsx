@@ -13,7 +13,15 @@ export default function ContradictionMap({ contradictions }) {
         svg.selectAll('*').remove();
 
         const width = svgRef.current.clientWidth;
-        const height = 400;
+        const height = Math.max(400, contradictions.length * 180);
+
+        // Helper function to truncate text smartly (at word boundary)
+        const smartTruncate = (text, maxLength) => {
+            if (text.length <= maxLength) return text;
+            const truncated = text.substring(0, maxLength);
+            const lastSpace = truncated.lastIndexOf(' ');
+            return (lastSpace > maxLength * 0.7 ? truncated.substring(0, lastSpace) : truncated) + '...';
+        };
 
         const nodes = [];
         const links = [];
@@ -21,22 +29,24 @@ export default function ContradictionMap({ contradictions }) {
         contradictions.forEach((contradiction, i) => {
             const claimANode = {
                 id: `${contradiction.id}-A`,
-                label: contradiction.claim_a.statement.substring(0, 40) + '...',
+                fullStatement: contradiction.claim_a.statement,
+                label: smartTruncate(contradiction.claim_a.statement, 60),
                 source: contradiction.claim_a.source,
                 credibility: contradiction.claim_a.credibility,
                 type: 'claim_a',
-                x: width * 0.25,
-                y: 100 + i * 150,
+                x: width * 0.2,
+                y: 120 + i * 180,
             };
 
             const claimBNode = {
                 id: `${contradiction.id}-B`,
-                label: contradiction.claim_b.statement.substring(0, 40) + '...',
+                fullStatement: contradiction.claim_b.statement,
+                label: smartTruncate(contradiction.claim_b.statement, 60),
                 source: contradiction.claim_b.source,
                 credibility: contradiction.claim_b.credibility,
                 type: 'claim_b',
-                x: width * 0.75,
-                y: 100 + i * 150,
+                x: width * 0.8,
+                y: 120 + i * 180,
             };
 
             nodes.push(claimANode, claimBNode);
@@ -64,6 +74,7 @@ export default function ContradictionMap({ contradictions }) {
             return '#fbbf24';
         };
 
+        // Draw links first (so they appear behind nodes)
         const link = g
             .selectAll('.link')
             .data(links)
@@ -76,7 +87,7 @@ export default function ContradictionMap({ contradictions }) {
             .attr('y2', (d) => d.source.y)
             .attr('stroke', (d) => getLinkColor(d.severity))
             .attr('stroke-width', 3)
-            .attr('stroke-dasharray', '5,5')
+            .attr('stroke-dasharray', '8,4')
             .attr('opacity', 0);
 
         link
@@ -85,8 +96,9 @@ export default function ContradictionMap({ contradictions }) {
             .duration(1000)
             .attr('x2', (d) => d.target.x)
             .attr('y2', (d) => d.target.y)
-            .attr('opacity', 0.8);
+            .attr('opacity', 0.7);
 
+        // Draw nodes
         const node = g
             .selectAll('.node')
             .data(nodes)
@@ -102,79 +114,96 @@ export default function ContradictionMap({ contradictions }) {
             .duration(600)
             .attr('opacity', 1);
 
+        // Larger rectangles with better proportions
         node
             .append('rect')
-            .attr('x', -120)
-            .attr('y', -40)
-            .attr('width', 240)
-            .attr('height', 80)
-            .attr('rx', 8)
+            .attr('x', -140)
+            .attr('y', -55)
+            .attr('width', 280)
+            .attr('height', 110)
+            .attr('rx', 12)
             .attr('fill', (d) => getNodeColor(d.credibility))
             .attr('stroke', '#fff')
             .attr('stroke-width', 3)
-            .style('filter', 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))');
+            .style('filter', 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))');
 
-        // Add text with wrapping
+        // Add text with proper wrapping and centering
         node.each(function (d) {
             const nodeGroup = d3.select(this);
 
-            // Main label (truncated)
-            const labelText = d.label.length > 50 ? d.label.substring(0, 47) + '...' : d.label;
-            nodeGroup
-                .append('text')
-                .attr('text-anchor', 'middle')
-                .attr('dy', -15)
-                .attr('fill', '#fff')
-                .attr('font-size', '12px')
-                .attr('font-weight', 'bold')
-                .text(labelText)
-                .call(wrapText, 220); // Wrap text to fit width
+            // Main statement (wrapped, centered)
+            const words = d.label.split(' ');
+            let line = '';
+            let lineNumber = 0;
+            const maxWidth = 250; // Leave padding
+            const lineHeight = 16;
+            const startY = -30;
 
-            // Source
-            nodeGroup
-                .append('text')
-                .attr('text-anchor', 'middle')
-                .attr('dy', 10)
-                .attr('fill', '#fff')
-                .attr('font-size', '10px')
-                .text(d.source);
+            const tempText = nodeGroup.append('text')
+                .attr('opacity', 0)
+                .attr('font-size', '13px');
 
-            // Credibility badge
-            nodeGroup
-                .append('text')
-                .attr('text-anchor', 'middle')
-                .attr('dy', 28)
-                .attr('fill', '#fff')
-                .attr('font-size', '9px')
-                .attr('opacity', 0.9)
-                .text(d.credibility.toUpperCase());
-        });
+            words.forEach((word, i) => {
+                const testLine = line + word + ' ';
+                tempText.text(testLine);
 
-        // Text wrapping function
-        function wrapText(text, width) {
-            text.each(function () {
-                const text = d3.select(this);
-                const words = text.text().split(/\s+/).reverse();
-                let word;
-                let line = [];
-                let lineNumber = 0;
-                const lineHeight = 1.1;
-                const y = text.attr('y');
-                const dy = parseFloat(text.attr('dy'));
-                let tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y).attr('dy', dy + 'px');
+                if (tempText.node().getComputedTextLength() > maxWidth && line !== '') {
+                    // Add the current line
+                    nodeGroup
+                        .append('text')
+                        .attr('text-anchor', 'middle')
+                        .attr('x', 0)
+                        .attr('y', startY + lineNumber * lineHeight)
+                        .attr('fill', '#fff')
+                        .attr('font-size', '13px')
+                        .attr('font-weight', '600')
+                        .text(line.trim());
 
-                while (word = words.pop()) {
-                    line.push(word);
-                    tspan.text(line.join(' '));
-                    if (tspan.node().getComputedTextLength() > width) {
-                        line.pop();
-                        tspan.text(line.join(' '));
-                        line = [word];
-                        tspan = text.append('tspan').attr('x', 0).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy + 'px').text(word);
-                    }
+                    line = word + ' ';
+                    lineNumber++;
+                } else {
+                    line = testLine;
                 }
             });
-        }
+
+            // Add the last line
+            if (line.trim() !== '') {
+                nodeGroup
+                    .append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('x', 0)
+                    .attr('y', startY + lineNumber * lineHeight)
+                    .attr('fill', '#fff')
+                    .attr('font-size', '13px')
+                    .attr('font-weight', '600')
+                    .text(line.trim());
+            }
+
+            tempText.remove();
+
+            // Source (centered)
+            nodeGroup
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .attr('x', 0)
+                .attr('y', 20)
+                .attr('fill', '#fff')
+                .attr('font-size', '11px')
+                .attr('opacity', 0.9)
+                .text(d.source.length > 30 ? d.source.substring(0, 27) + '...' : d.source);
+
+            // Credibility badge (centered)
+            nodeGroup
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .attr('x', 0)
+                .attr('y', 38)
+                .attr('fill', '#fff')
+                .attr('font-size', '10px')
+                .attr('font-weight', 'bold')
+                .attr('opacity', 0.95)
+                .text(d.credibility.toUpperCase());
+        });
 
         setTimeout(() => setIsAnimating(false), nodes.length * 400 + 1500);
     }, [contradictions]);
@@ -205,7 +234,7 @@ export default function ContradictionMap({ contradictions }) {
             <svg
                 ref={svgRef}
                 className="w-full"
-                style={{ height: '400px', background: '#f8fafc', borderRadius: '8px' }}
+                style={{ height: `${Math.max(400, contradictions.length * 180)}px`, background: '#f8fafc', borderRadius: '8px' }}
             />
             <div className="mt-4 flex gap-6 text-xs text-slate-600">
                 <div className="flex items-center gap-2">
