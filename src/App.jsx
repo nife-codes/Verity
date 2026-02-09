@@ -97,22 +97,36 @@ function App() {
     setProgress('Loading sample evidence...');
     setIsSampleMode(true);
     setApiStatus('gemini-3-pro-sample');
-    setAnalysis(null);
 
-    // Simulate progressive thinking steps
-    const thinkingSteps = [];
+    // Initialize with empty analysis
+    setAnalysis({
+      thinkingSteps: [],
+      thinking: '',
+      timeline: [],
+      contradictions: [],
+      tamperingIndicators: [],
+      confidenceScores: {},
+      summary: '',
+      files: sample.files
+    });
+
+    // Wait a bit before starting
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setStage('results');
+
+    // Simulate progressive thinking steps (one at a time, no duplicates)
     for (let i = 0; i < sample.gemini3Output.thinkingSteps.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      thinkingSteps.push(sample.gemini3Output.thinkingSteps[i]);
+      await new Promise(resolve => setTimeout(resolve, 1200)); // Slower for smoother effect
+
       setAnalysis(prev => ({
         ...prev,
-        thinkingSteps: [...thinkingSteps],
-        thinking: thinkingSteps.join('\n\n')
+        thinkingSteps: sample.gemini3Output.thinkingSteps.slice(0, i + 1), // Only include up to current step
+        thinking: sample.gemini3Output.thinkingSteps.slice(0, i + 1).join('\n\n')
       }));
     }
 
-    // Display final analysis
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Display final analysis after all thinking steps
+    await new Promise(resolve => setTimeout(resolve, 800));
     setAnalysis({
       thinking: sample.gemini3Output.thinkingSteps.join('\n\n'),
       thinkingSteps: sample.gemini3Output.thinkingSteps,
@@ -123,7 +137,6 @@ function App() {
       summary: sample.gemini3Output.analysis.verdict,
       files: sample.files
     });
-    setStage('results');
   };
 
   const handleTryDemo = () => {

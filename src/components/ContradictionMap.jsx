@@ -103,38 +103,78 @@ export default function ContradictionMap({ contradictions }) {
             .attr('opacity', 1);
 
         node
-            .append('circle')
-            .attr('r', 50)
+            .append('rect')
+            .attr('x', -120)
+            .attr('y', -40)
+            .attr('width', 240)
+            .attr('height', 80)
+            .attr('rx', 8)
             .attr('fill', (d) => getNodeColor(d.credibility))
             .attr('stroke', '#fff')
             .attr('stroke-width', 3)
             .style('filter', 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))');
 
-        node
-            .append('text')
-            .attr('text-anchor', 'middle')
-            .attr('dy', -10)
-            .attr('fill', '#fff')
-            .attr('font-size', '11px')
-            .attr('font-weight', 'bold')
-            .text((d) => d.label);
+        // Add text with wrapping
+        node.each(function (d) {
+            const nodeGroup = d3.select(this);
 
-        node
-            .append('text')
-            .attr('text-anchor', 'middle')
-            .attr('dy', 10)
-            .attr('fill', '#fff')
-            .attr('font-size', '9px')
-            .text((d) => d.source);
+            // Main label (truncated)
+            const labelText = d.label.length > 50 ? d.label.substring(0, 47) + '...' : d.label;
+            nodeGroup
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', -15)
+                .attr('fill', '#fff')
+                .attr('font-size', '12px')
+                .attr('font-weight', 'bold')
+                .text(labelText)
+                .call(wrapText, 220); // Wrap text to fit width
 
-        node
-            .append('text')
-            .attr('text-anchor', 'middle')
-            .attr('dy', 25)
-            .attr('fill', '#fff')
-            .attr('font-size', '8px')
-            .attr('opacity', 0.8)
-            .text((d) => d.credibility.toUpperCase());
+            // Source
+            nodeGroup
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', 10)
+                .attr('fill', '#fff')
+                .attr('font-size', '10px')
+                .text(d.source);
+
+            // Credibility badge
+            nodeGroup
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .attr('dy', 28)
+                .attr('fill', '#fff')
+                .attr('font-size', '9px')
+                .attr('opacity', 0.9)
+                .text(d.credibility.toUpperCase());
+        });
+
+        // Text wrapping function
+        function wrapText(text, width) {
+            text.each(function () {
+                const text = d3.select(this);
+                const words = text.text().split(/\s+/).reverse();
+                let word;
+                let line = [];
+                let lineNumber = 0;
+                const lineHeight = 1.1;
+                const y = text.attr('y');
+                const dy = parseFloat(text.attr('dy'));
+                let tspan = text.text(null).append('tspan').attr('x', 0).attr('y', y).attr('dy', dy + 'px');
+
+                while (word = words.pop()) {
+                    line.push(word);
+                    tspan.text(line.join(' '));
+                    if (tspan.node().getComputedTextLength() > width) {
+                        line.pop();
+                        tspan.text(line.join(' '));
+                        line = [word];
+                        tspan = text.append('tspan').attr('x', 0).attr('y', y).attr('dy', ++lineNumber * lineHeight + dy + 'px').text(word);
+                    }
+                }
+            });
+        }
 
         setTimeout(() => setIsAnimating(false), nodes.length * 400 + 1500);
     }, [contradictions]);
