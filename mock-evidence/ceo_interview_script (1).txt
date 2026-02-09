@@ -1,0 +1,38 @@
+CEO INTERVIEW - MARCH 20, 2025
+Interviewer: Sarah Johnson, Financial Times
+Subject: Michael Chen, CEO TechCorp
+
+[00:00:00]
+INTERVIEWER: "Mr. Chen, thank you for agreeing to this interview. I want to ask you directly - when did you first learn about the potential Zenith Corp acquisition?"
+
+[00:00:08]
+CEO: "I appreciate the opportunity to set the record straight. I was informed on March 15th, 2025, during our regular quarterly board meeting. That was the absolute first time I heard anything about Zenith Corp or any acquisition discussions."
+
+[00:00:22]
+INTERVIEWER: "You're certain about that date? March 15th?"
+
+[00:00:26]
+CEO: "Absolutely certain. March 15th. I remember it clearly because it was the day before my daughter's birthday party. I was completely surprised when the board brought it up. Before that meeting, I had zero knowledge of any discussions with Zenith."
+
+[00:00:41]
+INTERVIEWER: "But there are reports that preliminary meetings occurred earlier in March..."
+
+[00:00:45]
+CEO: "Those reports are inaccurate. Any meetings that may have occurred were handled by our VP of Corporate Development without my involvement or knowledge. I was not part of those conversations."
+
+[00:00:57]
+INTERVIEWER: "Thank you, Mr. Chen."
+
+[00:01:00]
+[END OF INTERVIEW]
+
+---
+INSTRUCTIONS TO CREATE AUDIO:
+1. Go to elevenlabs.io or similar AI voice tool
+2. Use a professional male voice (executive tone)
+3. Paste this script
+4. Generate audio
+5. Save as: ceo_interview.mp3
+6. Upload to your project
+
+Alternative: Just record yourself reading this script clearly.

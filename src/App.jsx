@@ -1,6 +1,8 @@
 ﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
 import FileUpload from './components/FileUpload';
+import SampleSelector from './components/SampleSelector';
+import ApiStatusBadge from './components/ApiStatusBadge';
 import { MOCK_ANALYSIS } from './utils/mockData';
 import { analyzeEvidence, mockAnalyzeEvidence } from './services/gemini';
 import { processFiles } from './services/fileProcessor';
@@ -19,6 +21,8 @@ function App() {
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState('');
+  const [apiStatus, setApiStatus] = useState(null);
+  const [isSampleMode, setIsSampleMode] = useState(false);
 
   const handleFilesUploaded = async (files) => {
     setStage('processing');
@@ -88,9 +92,45 @@ function App() {
     }
   };
 
+  const handleSampleSelected = async (sample) => {
+    setStage('processing');
+    setProgress('Loading sample evidence...');
+    setIsSampleMode(true);
+    setApiStatus('gemini-3-pro-sample');
+    setAnalysis(null);
+
+    // Simulate progressive thinking steps
+    const thinkingSteps = [];
+    for (let i = 0; i < sample.gemini3Output.thinkingSteps.length; i++) {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      thinkingSteps.push(sample.gemini3Output.thinkingSteps[i]);
+      setAnalysis(prev => ({
+        ...prev,
+        thinkingSteps: [...thinkingSteps],
+        thinking: thinkingSteps.join('\n\n')
+      }));
+    }
+
+    // Display final analysis
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setAnalysis({
+      thinking: sample.gemini3Output.thinkingSteps.join('\n\n'),
+      thinkingSteps: sample.gemini3Output.thinkingSteps,
+      timeline: sample.gemini3Output.analysis.timeline,
+      contradictions: sample.gemini3Output.analysis.contradictions,
+      tamperingIndicators: sample.gemini3Output.analysis.tamperingIndicators || [],
+      confidenceScores: sample.gemini3Output.analysis.confidenceScores,
+      summary: sample.gemini3Output.analysis.verdict,
+      files: sample.files
+    });
+    setStage('results');
+  };
+
   const handleTryDemo = () => {
     setStage('processing');
     setProgress('Loading demo analysis');
+    setApiStatus(null);
+    setIsSampleMode(false);
 
     setTimeout(() => {
       setAnalysis(MOCK_ANALYSIS);
@@ -102,6 +142,7 @@ function App() {
     return (
       <div className="min-h-screen bg-black relative overflow-hidden">
         <BubbleScene />
+        {apiStatus && <ApiStatusBadge status={apiStatus} />}
         <div className="relative z-10 max-w-6xl mx-auto px-6 py-20">
 
           <motion.header
@@ -117,6 +158,21 @@ function App() {
               Forensic Evidence Verification System
             </p>
           </motion.header>
+
+          {/* Sample Selector */}
+          <SampleSelector onSelectSample={handleSampleSelected} />
+
+          {/* Divider */}
+          <div className="relative my-12">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-800"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-black text-slate-500 uppercase tracking-wider font-mono">
+                Or Upload Custom Evidence
+              </span>
+            </div>
+          </div>
 
           <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center mb-20"
