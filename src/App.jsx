@@ -7,7 +7,7 @@ import { MOCK_ANALYSIS } from './utils/mockData';
 import { analyzeEvidence, mockAnalyzeEvidence } from './services/gemini';
 import { processFiles } from './services/fileProcessor';
 import ThinkingMode from './components/ThinkingMode';
-import Timeline from './components/Timeline';
+import Timeline from './components/TimeLine';
 import Contradictions from './components/Contradictions';
 import ContradictionMap from './components/ContradictionMap';
 import EvidenceCards from './components/EvidenceCards';
@@ -363,7 +363,7 @@ function App() {
 
   if (stage === 'results') {
     return (
-      <div className="min-h-screen bg-slate-50 py-12">
+      <div className="min-h-screen cyber-grid-bg py-12">
         <div className="max-w-6xl mx-auto px-8">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -371,7 +371,7 @@ function App() {
             transition={{ duration: 0.5 }}
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8"
           >
-            <h1 className="text-2xl md:text-3xl font-semibold text-slate-900">Analysis Results</h1>
+            <h1 className="text-2xl md:text-3xl font-semibold text-white">Analysis Results</h1>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <DownloadReport analysis={analysis} />
               <button

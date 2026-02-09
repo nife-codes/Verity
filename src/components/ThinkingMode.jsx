@@ -32,21 +32,21 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
   };
 
   const getStepColor = (step) => {
-    if (!step || typeof step !== 'string') return 'border-blue-500 bg-blue-50';
+    if (!step || typeof step !== 'string') return 'border-blue-500 bg-blue-900/20';
     const stepLower = step.toLowerCase();
     if (stepLower.includes('contradiction') || stepLower.includes('conflict') || stepLower.includes('evaluating')) {
-      return 'border-red-500 bg-red-50';
+      return 'border-red-500 bg-red-900/20';
     }
     if (stepLower.includes('timeline') || stepLower.includes('temporal') || stepLower.includes('constructing')) {
-      return 'border-purple-500 bg-purple-50';
+      return 'border-purple-500 bg-purple-900/20';
     }
     if (stepLower.includes('stock') || stepLower.includes('transaction') || stepLower.includes('uncovering')) {
-      return 'border-orange-500 bg-orange-50';
+      return 'border-orange-500 bg-orange-900/20';
     }
     if (stepLower.includes('investigating') || stepLower.includes('anomal')) {
-      return 'border-yellow-500 bg-yellow-50';
+      return 'border-yellow-500 bg-yellow-900/20';
     }
-    return 'border-blue-500 bg-blue-50';
+    return 'border-blue-500 bg-blue-900/20';
   };
 
   if (!steps || steps.length === 0) return null;
@@ -56,25 +56,25 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg p-6 mb-6 border border-blue-200"
+      className="bg-slate-900/50 border border-slate-700 rounded-xl shadow-lg p-6 mb-6 backdrop-blur-sm"
     >
-      <div className="flex items-center justify-between mb-4">
-        <BrainIcon className="w-6 h-6 text-blue-600" />
+      <div className="flex items-start justify-between mb-4 gap-3">
+        <BrainIcon className="w-6 h-6 text-blue-400 mt-1 flex-shrink-0" />
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-blue-900 mb-1">
+          <h3 className="text-lg font-semibold text-white mb-1">
             Reasoning Process
           </h3>
-          <p className="text-xs text-blue-600 uppercase tracking-wide font-mono">
+          <p className="text-xs text-blue-400 uppercase tracking-wide font-mono">
             Gemini 3 Pro • Thinking Mode Active
           </p>
         </div>
         {isAnalyzing && (
-          <div className="flex items-center gap-2 text-xs text-blue-600 font-mono">
+          <div className="flex items-center gap-2 text-xs text-blue-400 font-mono">
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ repeat: Infinity, duration: 1 }}
             >
-              <span className="w-2 h-2 bg-blue-600 rounded-full inline-block"></span>
+              <span className="w-2 h-2 bg-blue-400 rounded-full inline-block"></span>
             </motion.div>
             <span>Analyzing...</span>
           </div>
@@ -98,11 +98,11 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
                   <IconComponent className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-mono text-slate-500">
+                      <span className="text-xs font-mono text-slate-400">
                         Step {index + 1}/{totalSteps}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-800 leading-relaxed">
+                    <p className="text-sm text-slate-300 leading-relaxed">
                       {step}
                     </p>
                   </div>
@@ -117,9 +117,9 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mt-4 pt-4 border-t border-blue-200"
+          className="mt-4 pt-4 border-t border-slate-700"
         >
-          <div className="flex items-center gap-2 text-sm text-green-600">
+          <div className="flex items-center gap-2 text-sm text-emerald-400">
             <CheckCircleIcon className="w-5 h-5" />
             <span className="font-medium">Analysis Complete</span>
           </div>

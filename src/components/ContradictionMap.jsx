@@ -123,9 +123,9 @@ export default function ContradictionMap({ contradictions }) {
             .attr('height', 110)
             .attr('rx', 12)
             .attr('fill', (d) => getNodeColor(d.credibility))
-            .attr('stroke', '#fff')
+            .attr('stroke', '#0f172a')
             .attr('stroke-width', 3)
-            .style('filter', 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))');
+            .style('filter', 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))');
 
         // Add text with proper wrapping and centering
         node.each(function (d) {
@@ -217,32 +217,32 @@ export default function ContradictionMap({ contradictions }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="bg-white rounded-xl shadow-lg p-6 mb-6"
+            className="bg-slate-900/50 border border-slate-700 rounded-xl shadow-lg p-6 mb-6 backdrop-blur-sm"
         >
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-slate-900">Contradiction Map</h2>
+                <h2 className="text-2xl font-bold text-white">Contradiction Map</h2>
                 {isAnimating && (
-                    <div className="flex items-center gap-2 text-sm text-blue-600">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+                    <div className="flex items-center gap-2 text-sm text-blue-400">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                         <span>Building visualization...</span>
                     </div>
                 )}
             </div>
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-sm text-slate-400 mb-4">
                 Visual representation of contradicting claims across evidence sources
             </p>
             <svg
                 ref={svgRef}
                 className="w-full"
-                style={{ height: `${Math.max(400, contradictions.length * 180)}px`, background: '#f8fafc', borderRadius: '8px' }}
+                style={{ height: `${Math.max(400, contradictions.length * 180)}px`, background: '#0f172a', borderRadius: '8px' }}
             />
-            <div className="mt-4 flex gap-6 text-xs text-slate-600">
+            <div className="mt-4 flex gap-6 text-xs text-slate-400">
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
                     <span>High Credibility</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-amber-500"></div>
                     <span>Medium Credibility</span>
                 </div>
                 <div className="flex items-center gap-2">

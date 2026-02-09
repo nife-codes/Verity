@@ -10,9 +10,9 @@ export default function EvidenceCards({ files, analysis }) {
     };
 
     const getVerdictColor = (confidence) => {
-        if (confidence >= 0.8) return 'border-green-500 bg-green-50';
-        if (confidence >= 0.5) return 'border-yellow-500 bg-yellow-50';
-        return 'border-red-500 bg-red-50';
+        if (confidence >= 0.8) return 'border-emerald-600 bg-emerald-900/20';
+        if (confidence >= 0.5) return 'border-yellow-600 bg-yellow-900/20';
+        return 'border-red-600 bg-red-900/20';
     };
 
     const getVerdictText = (confidence) => {
@@ -56,7 +56,7 @@ export default function EvidenceCards({ files, analysis }) {
             transition={{ duration: 0.6 }}
             className="mb-6"
         >
-            <h2 className="text-2xl font-bold text-slate-900 mb-4">Evidence Analysis</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">Evidence Analysis</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {files.map((file, index) => {
                     const confidence = overallConfidence + (Math.random() * 0.2 - 0.1);
@@ -71,28 +71,28 @@ export default function EvidenceCards({ files, analysis }) {
                             className={`border-2 rounded-lg p-4 ${getVerdictColor(clampedConfidence)} transition-all hover:shadow-lg`}
                         >
                             <div className="flex items-start gap-3 mb-3">
-                                <div className="text-slate-600">{getFileIcon(file.category)}</div>
+                                <div className="text-slate-400">{getFileIcon(file.category)}</div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="font-semibold text-sm text-slate-900 truncate">
+                                    <h3 className="font-semibold text-sm text-slate-200 truncate">
                                         {file.fileName}
                                     </h3>
-                                    <p className="text-xs text-slate-600">{file.category}</p>
+                                    <p className="text-xs text-slate-400">{file.category}</p>
                                 </div>
-                                <div className="text-xs font-bold text-slate-700">{getVerdictIcon(clampedConfidence)}</div>
+                                <div className="text-xs font-bold text-slate-300">{getVerdictIcon(clampedConfidence)}</div>
                             </div>
 
                             <div className="mb-2">
-                                <div className="flex justify-between text-xs text-slate-600 mb-1">
+                                <div className="flex justify-between text-xs text-slate-400 mb-1">
                                     <span>Confidence</span>
                                     <span className="font-semibold">{Math.round(clampedConfidence * 100)}%</span>
                                 </div>
-                                <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                                <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${clampedConfidence * 100}%` }}
                                         transition={{ delay: index * 0.1 + 0.3, duration: 0.8, ease: 'easeOut' }}
                                         className={`h-full rounded-full ${clampedConfidence >= 0.8
-                                            ? 'bg-green-500'
+                                            ? 'bg-emerald-500'
                                             : clampedConfidence >= 0.5
                                                 ? 'bg-yellow-500'
                                                 : 'bg-red-500'
@@ -101,7 +101,7 @@ export default function EvidenceCards({ files, analysis }) {
                                 </div>
                             </div>
 
-                            <div className="text-xs font-semibold text-slate-700">
+                            <div className="text-xs font-semibold text-slate-300">
                                 {getVerdictText(clampedConfidence)}
                             </div>
                         </motion.div>

@@ -17,21 +17,21 @@ export default function Timeline({ events }) {
 
   if (!events || events.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <h2 className="text-2xl font-semibold mb-4">Timeline</h2>
-        <p className="text-gray-500">No timeline events found in the evidence.</p>
+      <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-6 mb-6 backdrop-blur-sm">
+        <h2 className="text-2xl font-semibold mb-4 text-white">Timeline</h2>
+        <p className="text-slate-400">No timeline events found in the evidence.</p>
       </div>
     );
   }
 
   const getConfidenceBadge = (confidence) => {
     const colors = {
-      very_high: 'bg-green-100 text-green-800',
-      high: 'bg-blue-100 text-blue-800',
-      medium: 'bg-yellow-100 text-yellow-800',
-      low: 'bg-red-100 text-red-800',
+      very_high: 'bg-emerald-900/30 text-emerald-400 border border-emerald-500/30',
+      high: 'bg-blue-900/30 text-blue-400 border border-blue-500/30',
+      medium: 'bg-yellow-900/30 text-yellow-400 border border-yellow-500/30',
+      low: 'bg-red-900/30 text-red-400 border border-red-500/30',
     };
-    return colors[confidence] || 'bg-gray-100 text-gray-800';
+    return colors[confidence] || 'bg-slate-800 text-slate-400 border border-slate-600';
   };
 
   const formatDate = (datetime) => {
@@ -54,9 +54,9 @@ export default function Timeline({ events }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6"
+      className="mb-8"
     >
-      <h2 className="text-xl md:text-2xl font-semibold mb-6">Verified Timeline</h2>
+      <h2 className="text-xl md:text-2xl font-semibold mb-6 text-white">Verified Timeline</h2>
       <div className="relative">
         <svg
           className="absolute left-4 md:left-8 top-0"
@@ -67,7 +67,7 @@ export default function Timeline({ events }) {
             y1="0"
             x2="1"
             y2="100%"
-            stroke="#3b82f6"
+            stroke="#374151"
             strokeWidth="2"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
@@ -91,17 +91,17 @@ export default function Timeline({ events }) {
               initial={{ scale: 0 }}
               animate={visibleEvents.includes(i) ? { scale: 1 } : { scale: 0 }}
               transition={{ delay: 0.2, duration: 0.3 }}
-              className="absolute left-2.5 md:left-6 top-1 w-3 h-3 md:w-5 md:h-5 rounded-full bg-blue-500 border-2 md:border-4 border-white shadow-lg"
+              className="absolute left-2.5 md:left-6 top-1 w-3 h-3 md:w-5 md:h-5 rounded-full bg-blue-500 border-2 md:border-4 border-slate-900 shadow-lg z-10"
             />
 
             <motion.div
               initial={{ scale: 0.95 }}
               animate={visibleEvents.includes(i) ? { scale: 1 } : { scale: 0.95 }}
               transition={{ delay: 0.3 }}
-              className="bg-gradient-to-br from-gray-50 to-white rounded-lg p-3 md:p-4 shadow-md hover:shadow-lg transition-shadow"
+              className="bg-slate-900/50 border border-slate-700 rounded-lg p-3 md:p-4 hover:border-blue-500/50 transition-colors"
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
-                <p className="font-semibold text-sm md:text-base text-gray-900">
+                <p className="font-semibold text-sm md:text-base text-white">
                   {formatDate(event.datetime)}
                 </p>
                 <span
@@ -113,7 +113,7 @@ export default function Timeline({ events }) {
                 </span>
               </div>
 
-              <p className="text-sm md:text-base text-gray-700 mb-2 font-medium">
+              <p className="text-sm md:text-base text-slate-300 mb-2 font-medium">
                 {event.event}
               </p>
 
@@ -122,7 +122,7 @@ export default function Timeline({ events }) {
                   {event.sources.map((source, idx) => (
                     <span
                       key={idx}
-                      className="text-xs bg-white px-2 py-1 rounded border border-gray-200 break-all"
+                      className="text-xs bg-slate-800 text-slate-400 px-2 py-1 rounded border border-slate-700 break-all"
                     >
                       {source}
                     </span>
@@ -131,7 +131,7 @@ export default function Timeline({ events }) {
               )}
 
               {event.reasoning && (
-                <p className="text-xs md:text-sm text-gray-600 italic">
+                <p className="text-xs md:text-sm text-slate-500 italic">
                   {event.reasoning}
                 </p>
               )}
