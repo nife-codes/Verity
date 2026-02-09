@@ -176,4 +176,4 @@ Built with love for the Gemini 3 Hackathon
 
 ## Contact
 
-For questions or feedback about Verity, please open an issue or reach out via [email](mailto:hephzibbahmorayo@gmail.com).
+For questions or feedback about Verity, please [open an issue](https://github.com/nife-codes/Verity/issues/new/choose) or reach out via [email](mailto:hephzibbahmorayo@gmail.com).
