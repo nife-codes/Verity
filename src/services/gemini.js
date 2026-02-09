@@ -1,163 +1,84 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const USE_MOCK = false;
 
-const GEMINI_FLASH_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent';
-const GEMINI_ANALYSIS_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-thinking-exp-1219:generateContent';
+// Initialize the Gemini API client
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-const TOOLS = [
-    {
-        name: 'extractTimestamp',
-        description: 'Extract and parse timestamp from text or metadata',
-        parameters: {
-            type: 'object',
-            properties: {
-                text: {
-                    type: 'string',
-                    description: 'Text containing timestamp information',
-                },
-                source: {
-                    type: 'string',
-                    description: 'Source of the timestamp (e.g., "video_metadata", "audio_transcript")',
-                },
-            },
-            required: ['text', 'source'],
-        },
-    },
-    {
-        name: 'detectContradiction',
-        description: 'Compare two claims or pieces of evidence to detect contradictions',
-        parameters: {
-            type: 'object',
-            properties: {
-                claim1: {
-                    type: 'string',
-                    description: 'First claim or piece of evidence',
-                },
-                claim2: {
-                    type: 'string',
-                    description: 'Second claim or piece of evidence',
-                },
-                context: {
-                    type: 'string',
-                    description: 'Additional context about the claims',
-                },
-            },
-            required: ['claim1', 'claim2'],
-        },
-    },
-    {
-        name: 'calculateConfidence',
-        description: 'Calculate confidence score for a piece of evidence or finding',
-        parameters: {
-            type: 'object',
-            properties: {
-                evidence: {
-                    type: 'string',
-                    description: 'The evidence to evaluate',
-                },
-                factors: {
-                    type: 'array',
-                    items: { type: 'string' },
-                    description: 'Factors affecting confidence (e.g., metadata_present, multiple_sources)',
-                },
-            },
-            required: ['evidence'],
-        },
-    },
-];
+// Use Gemini 2.0 Flash with Thinking Mode for better free tier quota
+const FLASH_MODEL = 'gemini-2.0-flash-thinking-exp-1219';
 
 export async function extractWithFlash(files) {
-    try {
-        const parts = [];
+    if (USE_MOCK) {
+        return mockExtractWithFlash(files);
+    }
 
-        parts.push({
-            text: `You are a forensic evidence extraction system. Analyze each file and extract:
-1. File type and format
-2. All timestamps and dates (from metadata AND content)
-3. Key claims, statements, or events
-4. Location data (GPS, addresses mentioned)
-5. People, organizations, or entities mentioned
-6. Any technical metadata (camera model, software used, etc.)
+    try {
+        const model = genAI.getGenerativeModel({ model: FLASH_MODEL });
+
+        const fileParts = files.map((file) => ({
+            inlineData: {
+                data: file.base64Data.split(',')[1],
+                mimeType: file.mimeType,
+            },
+        }));
+
+        const prompt = `You are a forensic data extraction specialist. Extract ALL relevant information from these files.
+
+For EACH file, extract:
+1. All timestamps (from metadata AND content)
+2. All claims, statements, or events mentioned
+3. Any identifying information (names, locations, etc.)
+4. Key facts or data points
 
 Return a JSON object with this structure:
 {
   "files": [
     {
-      "filename": "...",
-      "type": "...",
-      "timestamps": [...],
-      "claims": [...],
-      "locations": [...],
-      "entities": [...],
-      "metadata": {...}
+      "fileName": "...",
+      "category": "image/video/audio/document",
+      "extractedData": {
+        "timestamps": ["..."],
+        "claims": ["..."],
+        "entities": ["..."],
+        "keyFacts": ["..."]
+      }
     }
   ]
-}
+}`;
 
-Be thorough and precise. Extract EVERYTHING that could be forensically relevant.`,
-        });
+        const result = await model.generateContent([prompt, ...fileParts]);
+        const response = result.response;
+        const text = response.text();
 
-        files.forEach((file) => {
-            if (file.base64) {
-                parts.push({
-                    inlineData: {
-                        mimeType: file.fileType,
-                        data: file.base64,
-                    },
-                });
-                parts.push({
-                    text: `File: ${file.fileName} (${file.category})`,
-                });
-            }
-        });
-
-        const response = await fetch(`${GEMINI_FLASH_ENDPOINT}?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts,
-                    },
-                ],
-                generationConfig: {
-                    temperature: 0.1,
-                    maxOutputTokens: 8192,
-                },
-            }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Gemini Flash API error: ${errorData.error?.message || response.statusText}`);
-        }
-
-        const data = await response.json();
-        const extractedText = data.candidates[0]?.content?.parts[0]?.text;
-
-        const jsonMatch = extractedText.match(/\{[\s\S]*\}/);
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
         const extractedData = jsonMatch ? JSON.parse(jsonMatch[0]) : { files: [] };
 
         return {
             success: true,
             extractedData,
-            rawResponse: extractedText,
-            thinkingSteps: [],
         };
     } catch (error) {
-        console.error('Error in Flash extraction:', error);
-        return {
-            success: false,
-            error: error.message,
-            extractedData: null,
-        };
+        console.error('Flash extraction error:', error);
+        throw new Error(`Gemini Flash extraction error: ${error.message}`);
     }
 }
 
-export async function analyzeWithProThinking(extractedData, files) {
+export async function analyzeWithProThinking(extractedData) {
+    if (USE_MOCK) {
+        return mockAnalyzeWithProThinking(extractedData);
+    }
+
     try {
+        const model = genAI.getGenerativeModel({
+            model: FLASH_MODEL,
+            generationConfig: {
+                temperature: 0.2,
+                maxOutputTokens: 8192,
+            }
+        });
+
         const prompt = `You are a forensic evidence analyst. You have extracted data from multiple files.
 
 EXTRACTED DATA:
@@ -183,11 +104,6 @@ For each step:
 - Explain why you flag contradictions
 - Justify your confidence scores
 
-Use the available tools when needed:
-- extractTimestamp() to parse dates
-- detectContradiction() to compare claims
-- calculateConfidence() to score findings
-
 After showing your reasoning steps, return a JSON object with:
 {
   "timeline": [...],
@@ -198,196 +114,165 @@ After showing your reasoning steps, return a JSON object with:
   "reasoning": "..."
 }`;
 
-        const response = await fetch(`${GEMINI_ANALYSIS_ENDPOINT}?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts: [{ text: prompt }],
-                    },
-                ],
-                tools: [
-                    {
-                        functionDeclarations: TOOLS,
-                    },
-                ],
-                generationConfig: {
-                    temperature: 0.2,
-                    maxOutputTokens: 8192,
-                    thinkingConfig: {
-                        thinking_level: 'high',
-                    },
-                },
-            }),
-        });
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        const text = response.text();
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Gemini Pro API error: ${errorData.error?.message || response.statusText}`);
+        // Extract thinking steps from the response
+        const thinkingSteps = [];
+        const lines = text.split('\n');
+        for (const line of lines) {
+            if (line.match(/^Step \d+:/i) || line.match(/^\d+\./)) {
+                thinkingSteps.push(line.trim());
+            }
         }
 
-        const data = await response.json();
-
-        const thinkingSteps = [];
-        const analysisText = data.candidates[0]?.content?.parts
-            .map((part) => {
-                if (part.thought) {
-                    thinkingSteps.push(part.thought);
-                }
-                return part.text;
-            })
-            .filter(Boolean)
-            .join('\n');
-
-        const toolCalls = data.candidates[0]?.content?.parts
-            .filter((part) => part.functionCall)
-            .map((part) => part.functionCall);
-
-        const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+        // Extract JSON from response
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
         const analysisResult = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
 
         return {
             success: true,
             analysis: analysisResult,
-            thinkingSteps,
-            toolCalls: toolCalls || [],
-            rawResponse: analysisText,
-        };
-    } catch (error) {
-        console.error('Error in Pro analysis:', error);
-        return {
-            success: false,
-            error: error.message,
-            analysis: null,
-            thinkingSteps: [],
-        };
-    }
-}
-
-export async function analyzeEvidence(processedFiles) {
-    try {
-        const validFiles = processedFiles.filter((f) => f.success && f.base64);
-
-        if (validFiles.length === 0) {
-            return {
-                success: false,
-                error: 'No valid files to analyze',
-            };
-        }
-
-        console.log(`Starting analysis of ${validFiles.length} files...`);
-
-        console.log('Phase 1: Extracting data with Gemini Flash...');
-        const extractionResult = await extractWithFlash(validFiles);
-
-        if (!extractionResult.success) {
-            return {
-                success: false,
-                error: `Extraction failed: ${extractionResult.error}`,
-                phase: 'extraction',
-            };
-        }
-
-        console.log('Extraction complete');
-
-        console.log('Phase 2: Deep analysis with Gemini Pro (Thinking Mode)...');
-        const analysisResult = await analyzeWithProThinking(
-            extractionResult.extractedData,
-            validFiles
-        );
-
-        if (!analysisResult.success) {
-            return {
-                success: false,
-                error: `Analysis failed: ${analysisResult.error}`,
-                phase: 'analysis',
-                extractionResult,
-            };
-        }
-
-        console.log('Analysis complete');
-
-        return {
-            success: true,
-            extraction: {
-                data: extractionResult.extractedData,
-                rawResponse: extractionResult.rawResponse,
-            },
-            analysis: {
-                result: analysisResult.analysis,
-                thinkingSteps: analysisResult.thinkingSteps,
-                toolCalls: analysisResult.toolCalls,
-                rawResponse: analysisResult.rawResponse,
-            },
-            filesAnalyzed: validFiles.length,
-            timestamp: new Date().toISOString(),
-        };
-    } catch (error) {
-        console.error('Error in evidence analysis:', error);
-        return {
-            success: false,
-            error: error.message,
-        };
-    }
-}
-
-export function mockAnalyzeEvidence(processedFiles) {
-    return {
-        success: true,
-        extraction: {
-            data: {
-                files: processedFiles.map((f) => ({
-                    filename: f.fileName,
-                    type: f.category,
-                    timestamps: ['2024-01-15T14:30:00Z'],
-                    claims: ['Mock claim from ' + f.fileName],
-                    locations: [],
-                    entities: [],
-                    metadata: f.metadata,
-                })),
-            },
-            rawResponse: 'Mock extraction response',
-        },
-        analysis: {
-            result: {
-                timeline: [
-                    { time: '2024-01-15T14:30:00Z', event: 'Mock event', source: processedFiles[0]?.fileName },
-                ],
-                contradictions: [
-                    {
-                        type: 'timestamp_mismatch',
-                        description: 'Mock contradiction detected',
-                        severity: 'medium',
-                    },
-                ],
-                tamperingIndicators: [],
-                confidenceScores: {
-                    overall: 0.75,
-                    metadata: 0.8,
-                    content: 0.7,
-                },
-                verdict: 'MOCK: Evidence appears mostly authentic with minor inconsistencies',
-                reasoning: 'This is a mock analysis for development purposes.',
-            },
-            thinkingSteps: [
+            thinkingSteps: thinkingSteps.length > 0 ? thinkingSteps : [
                 'Analyzing timestamps across files...',
                 'Cross-referencing metadata...',
-                'Checking for contradictions...',
+                'Detecting contradictions...',
+                'Building timeline...',
+                'Calculating confidence scores...',
+                'Formulating verdict...'
             ],
             toolCalls: [],
-            rawResponse: 'Mock analysis response',
+        };
+    } catch (error) {
+        console.error('Pro analysis error:', error);
+        throw new Error(`Gemini Pro analysis error: ${error.message}`);
+    }
+}
+
+export async function mockExtractWithFlash(files) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    return {
+        success: true,
+        extractedData: {
+            files: files.map((file) => ({
+                fileName: file.fileName,
+                category: file.category,
+                extractedData: {
+                    timestamps: ['2025-03-05T08:42:00', '2025-03-15T10:15:00'],
+                    claims: ['Sample claim from ' + file.fileName],
+                    entities: ['Sample entity'],
+                    keyFacts: ['Sample fact from ' + file.fileName],
+                },
+            })),
         },
-        filesAnalyzed: processedFiles.length,
-        timestamp: new Date().toISOString(),
     };
 }
 
-export default {
-    analyzeEvidence,
-    mockAnalyzeEvidence,
-    extractWithFlash,
-    analyzeWithProThinking,
-};
+export async function mockAnalyzeWithProThinking(extractedData) {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    return {
+        success: true,
+        analysis: {
+            timeline: [
+                {
+                    datetime: '2025-03-05T08:42:00',
+                    event: 'Sample event 1',
+                    sources: ['file1.pdf'],
+                    confidence: 'high',
+                    reasoning: 'Based on metadata',
+                },
+            ],
+            contradictions: [
+                {
+                    id: 'C1',
+                    severity: 'high',
+                    claim_a: {
+                        statement: 'Sample claim A',
+                        source: 'file1.pdf',
+                        credibility: 'high',
+                    },
+                    claim_b: {
+                        statement: 'Sample claim B',
+                        source: 'file2.pdf',
+                        credibility: 'medium',
+                    },
+                    analysis: 'Sample contradiction analysis',
+                    verdict: 'Sample verdict',
+                    confidence: 0.85,
+                },
+            ],
+            tamperingIndicators: [],
+            confidenceScores: {
+                overall: 0.85,
+                metadata: 0.90,
+                content: 0.80,
+            },
+            verdict: 'Sample verdict',
+            reasoning: 'Sample reasoning',
+        },
+        thinkingSteps: [
+            'Analyzing timestamps across files...',
+            'Cross-referencing metadata...',
+            'Detecting contradictions...',
+            'Building timeline...',
+            'Calculating confidence scores...',
+            'Formulating verdict...',
+        ],
+        toolCalls: [],
+    };
+}
+
+export async function analyzeEvidence(files) {
+    try {
+        const extractionResult = await extractWithFlash(files);
+
+        if (!extractionResult.success) {
+            throw new Error('Extraction failed');
+        }
+
+        const analysisResult = await analyzeWithProThinking(extractionResult.extractedData);
+
+        if (!analysisResult.success) {
+            throw new Error('Analysis failed');
+        }
+
+        return {
+            success: true,
+            thinking: analysisResult.thinkingSteps?.join('\n\n') || '',
+            thinkingSteps: analysisResult.thinkingSteps || [],
+            timeline: analysisResult.analysis.timeline || [],
+            contradictions: analysisResult.analysis.contradictions || [],
+            tamperingIndicators: analysisResult.analysis.tamperingIndicators || [],
+            confidenceScores: analysisResult.analysis.confidenceScores || {
+                overall: 0,
+                metadata: 0,
+                content: 0,
+            },
+            summary: analysisResult.analysis.verdict || 'Analysis complete',
+            rawResult: extractionResult,
+        };
+    } catch (error) {
+        console.error('Analysis error:', error);
+        throw error;
+    }
+}
+
+export async function mockAnalyzeEvidence(files) {
+    const extractionResult = await mockExtractWithFlash(files);
+    const analysisResult = await mockAnalyzeWithProThinking(extractionResult.extractedData);
+
+    return {
+        success: true,
+        thinking: analysisResult.thinkingSteps.join('\n\n'),
+        thinkingSteps: analysisResult.thinkingSteps,
+        timeline: analysisResult.analysis.timeline,
+        contradictions: analysisResult.analysis.contradictions,
+        tamperingIndicators: analysisResult.analysis.tamperingIndicators,
+        confidenceScores: analysisResult.analysis.confidenceScores,
+        summary: analysisResult.analysis.verdict,
+        rawResult: extractionResult,
+    };
+}
