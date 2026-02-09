@@ -6,8 +6,8 @@ const USE_MOCK = false;
 // Initialize the Gemini API client
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
-// Use Gemini 2.0 Flash with Thinking Mode for better free tier quota
-const FLASH_MODEL = 'gemini-2.0-flash-thinking-exp-1219';
+// Use Gemini 3 Pro with Thinking Mode
+const FLASH_MODEL = 'gemini-3-pro-preview';
 
 export async function extractWithFlash(files) {
     if (USE_MOCK) {
