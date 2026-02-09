@@ -171,8 +171,14 @@ YOUR TASK:
 5. Calculate confidence scores for each finding
 6. Provide a final verdict on evidence integrity
 
-SHOW YOUR THINKING PROCESS:
-- Explain each step of your reasoning
+CRITICAL: SHOW YOUR REASONING STEP-BY-STEP
+Format your thinking process as clear, numbered steps:
+Step 1: [What you're analyzing]
+Step 2: [What you discovered]
+Step 3: [Your conclusion]
+
+For each step:
+- Explain what you're examining
 - Show how you cross-reference information
 - Explain why you flag contradictions
 - Justify your confidence scores
@@ -182,7 +188,7 @@ Use the available tools when needed:
 - detectContradiction() to compare claims
 - calculateConfidence() to score findings
 
-Return a JSON object with:
+After showing your reasoning steps, return a JSON object with:
 {
   "timeline": [...],
   "contradictions": [...],
@@ -212,7 +218,7 @@ Return a JSON object with:
                     temperature: 0.2,
                     maxOutputTokens: 8192,
                     thinkingConfig: {
-                        enabled: true,
+                        thinking_level: 'high',
                     },
                 },
             }),
