@@ -6,7 +6,7 @@ export default function ApiStatusBadge({ status }) {
         switch (status) {
             case 'gemini-3-pro-sample':
                 return {
-                    icon: '✓',
+                    icon: 'LIVE',
                     text: 'Gemini 3 Pro',
                     subtext: 'Pre-validated Sample',
                     color: 'emerald',
@@ -16,7 +16,7 @@ export default function ApiStatusBadge({ status }) {
                 };
             case 'gemini-3-pro-live':
                 return {
-                    icon: '✓',
+                    icon: 'LIVE',
                     text: 'Gemini 3 Pro',
                     subtext: 'Live Analysis',
                     color: 'emerald',
@@ -26,7 +26,7 @@ export default function ApiStatusBadge({ status }) {
                 };
             case 'gemini-3-flash':
                 return {
-                    icon: '⚠',
+                    icon: 'FALLBACK',
                     text: 'Gemini 3 Flash',
                     subtext: 'Pro quota exceeded',
                     color: 'yellow',
@@ -36,7 +36,7 @@ export default function ApiStatusBadge({ status }) {
                 };
             case 'gemini-2-flash':
                 return {
-                    icon: '⚠',
+                    icon: 'FALLBACK',
                     text: 'Gemini 2.0 Flash',
                     subtext: 'Fallback mode',
                     color: 'orange',

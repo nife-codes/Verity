@@ -13,9 +13,8 @@ import {
 } from './Icons';
 
 export default function ThinkingMode({ thinkingText, thinkingSteps }) {
-  // Use the provided steps directly, no complex animation logic
   const steps = thinkingSteps || (thinkingText ? thinkingText.split('\n\n').filter(s => s.trim()) : []);
-  const totalSteps = 6; // Fixed total for Gemini 3 Pro analysis
+  const totalSteps = 6;
   const isAnalyzing = steps.length < totalSteps;
 
   const getStepIcon = (step) => {
@@ -75,7 +74,7 @@ export default function ThinkingMode({ thinkingText, thinkingSteps }) {
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ repeat: Infinity, duration: 1 }}
             >
-              ●
+              <span className="w-2 h-2 bg-blue-600 rounded-full inline-block"></span>
             </motion.div>
             <span>Analyzing...</span>
           </div>

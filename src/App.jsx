@@ -183,10 +183,9 @@ function App() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3">
-                <span className="text-4xl">🎯</span>
+              <h2 className="text-3xl font-bold text-white mb-3">
                 Try Sample Evidence
-                <span className="px-3 py-1 bg-emerald-500/20 border border-emerald-500 text-emerald-400 text-xs font-mono rounded-full">
+                <span className="ml-3 px-2 py-1 bg-emerald-500/20 border border-emerald-500 text-emerald-400 text-[10px] font-mono rounded-full align-middle">
                   RECOMMENDED
                 </span>
               </h2>
@@ -304,36 +303,36 @@ function App() {
 
   if (stage === 'processing') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen cyber-grid-bg flex items-center justify-center">
         <div className="max-w-md w-full px-6">
-          <div className="bg-white border border-slate-200 rounded-lg p-8">
+          <div className="bg-slate-900/80 border border-slate-700 rounded-lg p-8 backdrop-blur-sm">
             <div className="flex flex-col items-center">
               <div className="relative mb-6">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-blue-700"></div>
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-700 border-t-emerald-500"></div>
               </div>
 
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+              <h3 className="text-lg font-semibold text-white mb-2">
                 Processing Evidence
               </h3>
 
               <div className="w-full space-y-3 mt-6">
                 <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${progress.includes('Extracting') || progress.includes('Analyzing') ? 'bg-blue-700' : 'bg-slate-300'}`}></div>
-                  <p className="text-sm text-slate-600">
+                  <div className={`w-2 h-2 rounded-full ${progress.includes('Extracting') || progress.includes('Analyzing') ? 'bg-emerald-500' : 'bg-slate-600'}`}></div>
+                  <p className="text-sm text-slate-300">
                     {progress.includes('Extracting') ? 'Extracting content...' : progress.includes('Extracting') ? 'Content extracted' : 'Awaiting extraction'}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${progress.includes('Analyzing') ? 'bg-blue-700 animate-pulse' : progress.includes('Loading') ? 'bg-blue-700' : 'bg-slate-300'}`}></div>
-                  <p className="text-sm text-slate-600">
+                  <div className={`w-2 h-2 rounded-full ${progress.includes('Analyzing') ? 'bg-emerald-500 animate-pulse' : progress.includes('Loading') ? 'bg-emerald-500' : 'bg-slate-600'}`}></div>
+                  <p className="text-sm text-slate-300">
                     {progress.includes('Analyzing') ? 'Analyzing evidence...' : progress.includes('Loading') ? 'Analysis complete' : 'Awaiting analysis'}
                   </p>
                 </div>
               </div>
 
               {progress && (
-                <p className="text-xs text-slate-400 mt-6 text-center">
+                <p className="text-xs text-slate-500 mt-6 text-center">
                   {progress}
                 </p>
               )}
@@ -346,14 +345,14 @@ function App() {
 
   if (stage === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen cyber-grid-bg flex items-center justify-center">
         <div className="text-center max-w-2xl p-8">
           <div className="text-5xl mb-4 text-red-500">×</div>
-          <h2 className="text-2xl font-semibold text-slate-900 mb-4">Analysis Failed</h2>
-          <p className="text-slate-600 mb-6">{error}</p>
+          <h2 className="text-2xl font-semibold text-white mb-4">Analysis Failed</h2>
+          <p className="text-slate-400 mb-6">{error}</p>
           <button
             onClick={() => setStage('upload')}
-            className="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 font-medium transition-colors duration-200"
+            className="px-6 py-3 bg-emerald-500 text-black font-semibold rounded-lg hover:bg-emerald-400 transition-all duration-200"
           >
             Try Again
           </button>

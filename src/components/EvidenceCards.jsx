@@ -4,9 +4,9 @@ export default function EvidenceCards({ files, analysis }) {
     if (!files || files.length === 0) return null;
 
     const getVerdictIcon = (confidence) => {
-        if (confidence >= 0.8) return '✓';
-        if (confidence >= 0.5) return '⚠️';
-        return '❌';
+        if (confidence >= 0.8) return 'PASS';
+        if (confidence >= 0.5) return 'WARN';
+        return 'FAIL';
     };
 
     const getVerdictColor = (confidence) => {
@@ -78,7 +78,7 @@ export default function EvidenceCards({ files, analysis }) {
                                     </h3>
                                     <p className="text-xs text-slate-600">{file.category}</p>
                                 </div>
-                                <div className="text-2xl">{getVerdictIcon(clampedConfidence)}</div>
+                                <div className="text-xs font-bold text-slate-700">{getVerdictIcon(clampedConfidence)}</div>
                             </div>
 
                             <div className="mb-2">
@@ -92,10 +92,10 @@ export default function EvidenceCards({ files, analysis }) {
                                         animate={{ width: `${clampedConfidence * 100}%` }}
                                         transition={{ delay: index * 0.1 + 0.3, duration: 0.8, ease: 'easeOut' }}
                                         className={`h-full rounded-full ${clampedConfidence >= 0.8
-                                                ? 'bg-green-500'
-                                                : clampedConfidence >= 0.5
-                                                    ? 'bg-yellow-500'
-                                                    : 'bg-red-500'
+                                            ? 'bg-green-500'
+                                            : clampedConfidence >= 0.5
+                                                ? 'bg-yellow-500'
+                                                : 'bg-red-500'
                                             }`}
                                     />
                                 </div>

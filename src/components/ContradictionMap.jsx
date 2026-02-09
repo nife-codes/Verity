@@ -223,7 +223,7 @@ export default function ContradictionMap({ contradictions }) {
                 <h2 className="text-2xl font-bold text-slate-900">Contradiction Map</h2>
                 {isAnimating && (
                     <div className="flex items-center gap-2 text-sm text-blue-600">
-                        <div className="animate-pulse">●</div>
+                        <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
                         <span>Building visualization...</span>
                     </div>
                 )}
