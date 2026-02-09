@@ -16,31 +16,31 @@ export const GOLDEN_SAMPLES = [
         complexity: "High",
         files: [
             {
-                fileName: "quarterly_meeting_transcript.pdf",
+                fileName: "board_meeting_transcript.pdf",
                 fileType: "application/pdf",
                 category: "pdf",
                 description: "Board meeting transcript where CEO admits to March 5th meetings"
             },
             {
-                fileName: "ceo_interview_script.txt",
+                fileName: "ceo_interview_script (1).txt",
                 fileType: "text/plain",
                 category: "document",
                 description: "Public interview where CEO claims ignorance until March 15th"
             },
             {
-                fileName: "executive_floor_access_log.png",
+                fileName: "security_log.png",
                 fileType: "image/png",
                 category: "image",
                 description: "Digital access logs showing CEO at strategic session"
             },
             {
-                fileName: "merrill_lynch_statement.pdf",
+                fileName: "stock_trades.pdf",
                 fileType: "application/pdf",
                 category: "pdf",
                 description: "Brokerage statement showing suspicious stock sales"
             },
             {
-                fileName: "email_martinez_chen.pdf",
+                fileName: "email_evidence.pdf",
                 fileType: "application/pdf",
                 category: "pdf",
                 description: "VP email to CEO about acquisition valuation"
@@ -70,49 +70,49 @@ export const GOLDEN_SAMPLES = [
                     {
                         datetime: "2025-02-25T00:00:00Z",
                         event: "Informal conversations with Zenith begin via investment banking contacts.",
-                        sources: ["quarterly_meeting_transcript.pdf"],
+                        sources: ["board_meeting_transcript.pdf"],
                         confidence: "medium",
                         reasoning: "Mentioned by CEO during board meeting; dates are approximate ('late February')."
                     },
                     {
                         datetime: "2025-03-05T08:42:15Z",
                         event: "CEO Michael Chen attends Executive Strategic Session with VP Martinez and Legal regarding Zenith.",
-                        sources: ["executive_floor_access_log.png", "quarterly_meeting_transcript.pdf"],
+                        sources: ["security_log.png", "board_meeting_transcript.pdf"],
                         confidence: "high",
                         reasoning: "Digital access logs provide precise entry/exit timestamps for specific personnel."
                     },
                     {
                         datetime: "2025-03-05T16:01:00Z",
                         event: "Michael Chen places orders to sell 80,000 TECH shares after market close.",
-                        sources: ["merrill_lynch_statement.pdf"],
+                        sources: ["stock_trades.pdf"],
                         confidence: "high",
                         reasoning: "Brokerage statements are regulated financial records."
                     },
                     {
                         datetime: "2025-03-08T09:47:00Z",
                         event: "VP Martinez emails CEO Chen valuation numbers discussed in that morning's strategy session.",
-                        sources: ["email_martinez_chen.pdf"],
+                        sources: ["email_evidence.pdf"],
                         confidence: "high",
                         reasoning: "Email metadata includes specific date/time and direct addressing of the CEO."
                     },
                     {
                         datetime: "2025-03-15T10:15:23Z",
                         event: "Quarterly Board Meeting: CEO presents Zenith acquisition for the first time formally.",
-                        sources: ["quarterly_meeting_transcript.pdf"],
+                        sources: ["board_meeting_transcript.pdf"],
                         confidence: "high",
                         reasoning: "Internal corporate record of board proceedings."
                     },
                     {
                         datetime: "2025-03-16T00:00:00Z",
                         event: "Public announcement of Zenith Corporation acquisition.",
-                        sources: ["merrill_lynch_statement.pdf"],
+                        sources: ["stock_trades.pdf"],
                         confidence: "high",
                         reasoning: "Confirmed by regulatory note on financial statement."
                     },
                     {
                         datetime: "2025-03-20T00:00:00Z",
                         event: "CEO Interview: Chen claims he first heard of the deal on March 15.",
-                        sources: ["ceo_interview_script.txt"],
+                        sources: ["ceo_interview_script (1).txt"],
                         confidence: "high",
                         reasoning: "Transcript of direct interview; however, content is factually contradicted by other evidence."
                     }
@@ -124,12 +124,12 @@ export const GOLDEN_SAMPLES = [
                         severity: "critical",
                         claim_a: {
                             statement: "I was informed on March 15th, 2025... That was the absolute first time I heard anything about Zenith Corp.",
-                            source: "ceo_interview_script.txt",
+                            source: "ceo_interview_script (1).txt",
                             credibility: "low"
                         },
                         claim_b: {
                             statement: "Our first formal meeting with Zenith was March 5th... The valuation analysis I shared with Michael on March 8th suggests a fair price point.",
-                            source: "quarterly_meeting_transcript.pdf",
+                            source: "board_meeting_transcript.pdf",
                             credibility: "high"
                         },
                         analysis: "The CEO claims 100% ignorance of the deal prior to March 15 in a public interview, but previously admitted in a recorded board meeting to having discussions as early as February and meetings on March 5.",
@@ -146,7 +146,7 @@ export const GOLDEN_SAMPLES = [
                         },
                         claim_b: {
                             statement: "08:42:15 - Chen, Michael (CEO) | Room: Conf Room A | Event: EXECUTIVE STRATEGIC SESSION | Attendees: CEO + Corp Dev + Legal.",
-                            source: "executive_floor_access_log.png",
+                            source: "security_log.png",
                             credibility: "high"
                         },
                         analysis: "Access logs prove the CEO was physically present in the strategic session on March 5, contradicting his claim that meetings were handled without his knowledge.",
