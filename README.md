@@ -4,28 +4,30 @@
 
 A cutting-edge forensic analysis tool powered by Gemini 3 Pro that detects contradictions, reconstructs timelines, and validates evidence authenticity across multimodal sources.
 
+![Verity Interface](./assets/front.png)
+
 ![Gemini 3 Pro](https://img.shields.io/badge/Gemini%203%20Pro-Powered-4285F4?style=for-the-badge&logo=google)
 ![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react)
 ![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite)
 
 ---
 
-## 🎯 What is Verity?
+## What is Verity?
 
 Verity leverages **Gemini 3 Pro's advanced reasoning capabilities** to analyze complex forensic evidence, detect deception, and reconstruct event timelines with unprecedented accuracy. Built for legal professionals, investigators, and compliance teams.
 
 ### Key Features
 
-- **🧠 Advanced Reasoning** - Gemini 3 Pro's thinking mode provides transparent, step-by-step analysis
-- **📊 Multimodal Analysis** - Process documents, images, transcripts, and financial records simultaneously
-- **⚡ Contradiction Detection** - Automatically identify conflicting claims across evidence sources
-- **📅 Timeline Reconstruction** - Build precise chronologies from metadata and content analysis
-- **🎨 Visual Intelligence** - Interactive contradiction maps and animated timelines
-- **🔒 Evidence Integrity** - Detect tampering through metadata analysis and cross-referencing
+- **Advanced Reasoning** - Gemini 3 Pro's thinking mode provides transparent, step-by-step analysis
+- **Multimodal Analysis** - Process documents, images, transcripts, and financial records simultaneously
+- **Contradiction Detection** - Automatically identify conflicting claims across evidence sources
+- **Timeline Reconstruction** - Build precise chronologies from metadata and content analysis
+- **Visual Intelligence** - Interactive contradiction maps and animated timelines
+- **Evidence Integrity** - Detect tampering through metadata analysis and cross-referencing
 
 ---
 
-## 🚀 Demo Strategy
+## Demo Strategy
 
 Verity uses a **Golden Path demo system** designed for the Gemini 3 hackathon:
 
@@ -50,7 +52,7 @@ Live analysis with graceful fallback:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React 18 + Vite
 - **AI**: Gemini 3 Pro via `@google/generative-ai` SDK
@@ -60,7 +62,7 @@ Live analysis with graceful fallback:
 
 ---
 
-## 📦 Installation
+## Installation
 
 ```bash
 # Clone repository
@@ -80,7 +82,7 @@ npm run dev
 
 ---
 
-## 🎮 Usage
+## Usage
 
 ### Try Sample Evidence
 
@@ -98,7 +100,7 @@ npm run dev
 
 ---
 
-## 🧪 Gemini 3 Integration
+## Gemini 3 Integration
 
 See [GEMINI_INTEGRATION.md](./GEMINI_INTEGRATION.md) for detailed information about:
 - How we use Gemini 3 Pro's thinking mode
@@ -108,7 +110,7 @@ See [GEMINI_INTEGRATION.md](./GEMINI_INTEGRATION.md) for detailed information ab
 
 ---
 
-## 📸 Screenshots
+## Visual Tour
 
 ### Reasoning Process
 Gemini 3 Pro's step-by-step thinking mode shows transparent analysis:
@@ -117,27 +119,38 @@ Gemini 3 Pro's step-by-step thinking mode shows transparent analysis:
 - Contradiction evaluation
 - Timeline construction
 
+![Reasoning Process](./assets/reasoning.gif)
+
 ### Contradiction Map
 Visual representation of conflicting claims with credibility scoring:
 - Red nodes = Low credibility (self-reported claims)
 - Green nodes = High credibility (documentary evidence)
 - Dashed lines = Contradiction links
 
+![Contradiction Map](./assets/contradictory.png)
+
 ### Timeline Reconstruction
 Chronological event sequence with confidence scores and source attribution.
 
+![Timeline Reconstruction](./assets/timeline.gif)
+
+### Final Report
+Comprehensive summary and verdict generation.
+
+![Final Report](./assets/final.png)
+
 ---
 
-## 🏆 Hackathon Submission
+## Hackathon Submission
 
 **Category**: Open (Forensic Analysis Tool)
 
 **Gemini 3 Features Used**:
-- ✅ Thinking Mode for transparent reasoning
-- ✅ Multimodal analysis (text, images, PDFs)
-- ✅ Advanced contradiction detection
-- ✅ Temporal reasoning and timeline construction
-- ✅ Confidence scoring and credibility assessment
+- Thinking Mode for transparent reasoning
+- Multimodal analysis (text, images, PDFs)
+- Advanced contradiction detection
+- Temporal reasoning and timeline construction
+- Confidence scoring and credibility assessment
 
 **Why Verity Stands Out**:
 1. **Real-world application** - Solves actual legal/compliance problems
@@ -146,17 +159,13 @@ Chronological event sequence with confidence scores and source attribution.
 4. **Professional UI** - Polished, hackathon-quality design
 5. **Validated output** - All sample data from real Gemini 3 Pro analysis
 
----
 
-## 📄 License
-
-MIT License - See [LICENSE](./LICENSE) for details
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-Built with ❤️ for the Gemini 3 Hackathon
+Built with love for the Gemini 3 Hackathon
 
 - **Gemini 3 Pro** - Advanced reasoning and multimodal analysis
 - **Google AI Studio** - Sample validation and testing
@@ -165,6 +174,6 @@ Built with ❤️ for the Gemini 3 Hackathon
 
 ---
 
-## 📧 Contact
+## Contact
 
-For questions or feedback about Verity, please open an issue or reach out via the hackathon platform.
+For questions or feedback about Verity, please open an issue or reach out via [email](mailto:hephzibbahmorayo@gmail.com).
