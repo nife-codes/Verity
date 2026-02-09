@@ -12,7 +12,7 @@ import EvidenceCards from './components/EvidenceCards';
 import DownloadReport from './components/DownloadReport';
 import BubbleScene from './components/BubbleScene';
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 function App() {
   const [stage, setStage] = useState('upload');
