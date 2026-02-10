@@ -29,6 +29,8 @@ Verity leverages **Gemini 3 Pro's advanced reasoning capabilities** to analyze c
 
 ## Demo Strategy
 
+[WATCH DEMO](https://youtu.be/PET1QYWQL8U)
+
 Verity uses a **Golden Path demo system** designed for the Gemini 3 hackathon:
 
 ### Sample Evidence Mode (Recommended)
